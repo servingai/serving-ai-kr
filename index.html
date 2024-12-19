@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>직장인 AI 도구 추천</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom-v2.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
+    <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Firebase SDK 추가 -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase 초기화 스크립트 -->
+    <script>
+        // Firebase 구성
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkGS-4rZyuRjYJcdkpTHMX-jH-ODWQsU4",
+            authDomain: "servingai-af0b7.firebaseapp.com",
+            projectId: "servingai-af0b7",
+            storageBucket: "servingai-af0b7.appspot.com",
+            messagingSenderId: "961797414957",
+            appId: "1:961797414957:web:project-961797414957"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        // Google 로그인 함수
+        function googleLogin() {
+            console.log('Google login clicked'); // 디버깅용 로그
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    console.log('Login successful:', result.user); // 디버깅용 로그
+                    const user = result.user;
+                    updateUIForLoggedInUser(user);
+                })
+                .catch((error) => {
+                    console.error("로그인 에러:", error);
+                    alert("로그인 중 오류가 발생했습니다: " + error.message);
+                });
+        }
+        
+        // 로그아웃 함수
+        function signOut() {
+            auth.signOut()
+                .then(() => {
+                    console.log('Logout successful'); // 디버깅용 로그
+                    updateUIForLoggedOutUser();
+                })
+                .catch((error) => {
+                    console.error("로그아웃 에러:", error);
+                });
+        }
+        
+        // UI 업데이트 함수
+        function updateUIForLoggedInUser(user) {
+            const userButton = document.getElementById('userButton');
+            const userImage = document.getElementById('userImage');
+            const userName = document.getElementById('userName');
+            
+            if (userImage) userImage.src = user.photoURL || 'https://via.placeholder.com/32';
+            if (userName) userName.textContent = user.displayName || '사용자';
+            if (userButton) userButton.onclick = signOut;
+            
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+        }
+        
+        function updateUIForLoggedOutUser() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('userSection').classList.add('hidden');
+        }
+        
+        // 인증 상태 변경 감지
+        auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? 'logged in' : 'logged out'); // 디버깅용 로그
+            if (user) {
+                updateUIForLoggedInUser(user);
+            } else {
+                updateUIForLoggedOutUser();
+            }
+        });
+
+        // 페이지 로드 시 초기 상태 설정
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                updateUIForLoggedInUser(currentUser);
+            } else {
+                updateUIForLoggedOutUser();
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-50">
+    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+        <div class="flex items-center justify-between px-4 py-3">
+            <h1 class="text-xl font-['Pacifico'] text-custom flex items-center min-w-[140px]">
+                <span>Serving AI</span>
+            </h1>
+            <div class="flex-1 mx-6">
+                <div class="relative">
+                    <input type="text" placeholder="AI 도구 검색" class="w-full pl-10 pr-4 py-2 text-sm border rounded-lg bg-gray-50">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- 로그인 전 -->
+            <div id="loginSection" class="flex items-center">
+                <button onclick="googleLogin()" type="button" class="flex items-center px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                    <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4 mr-2">
+                    <span class="text-sm">Google 로그인</span>
+                </button>
+            </div>
+            
+            <!-- 로그인 후 -->
+            <div id="userSection" class="hidden flex items-center">
+                <div class="flex items-center mr-2">
+                    <img id="userImage" src="https://via.placeholder.com/32" alt="User" class="w-8 h-8 rounded-full">
+                    <span id="userName" class="ml-2 text-sm font-medium">사용자</span>
+                </div>
+                <button id="userButton" onclick="signOut()" class="text-sm text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="mt-16 mb-20 px-4">
+        <nav class="overflow-x-auto py-4 -mx-4 mb-6">
+            <div class="flex px-4 space-x-4 w-max">
+                <button class="px-4 py-2 bg-custom text-white !rounded-button whitespace-nowrap">문서작성</button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-600 !rounded-button whitespace-nowrap">데이터분석</button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-600 !rounded-button whitespace-nowrap">프레젠테이션</button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-600 !rounded-button whitespace-nowrap">업무자동화</button>
+            </div>
+        </nav>
+
+        <section class="mb-8">
+            <h2 class="text-lg font-bold mb-4">맞춤 AI 도구 추천</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <img src="https://creatie.ai/ai/api/search-image?query=A professional UI of an AI writing assistant tool with a clean and minimal interface, showing document editing features and AI suggestions&width=150&height=150&orientation=squarish&flag=625f7f90-0149-4fcf-8654-fb8fe69af90e" class="w-full h-32 object-cover rounded-lg mb-3">
+                    <h3 class="font-bold mb-1">WritingGPT</h3>
+                    <div class="flex items-center text-sm text-gray-600 mb-2">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8</span>
+                        <span class="mx-2">|</span>
+                        <span>사용자 12.5만</span>
+                    </div>
+                    <p class="text-sm text-gray-500">AI 기반 문서 작성 및 교정 도구</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <img src="https://creatie.ai/ai/api/search-image?query=A professional UI of an AI data analysis tool showing charts, graphs and data visualization features with a modern interface&width=150&height=150&orientation=squarish&flag=b5be6713-2833-416d-9ee5-22d67eec458b" class="w-full h-32 object-cover rounded-lg mb-3">
+                    <h3 class="font-bold mb-1">DataMind AI</h3>
+                    <div class="flex items-center text-sm text-gray-600 mb-2">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.7</span>
+                        <span class="mx-2">|</span>
+                        <span>사용자 8.3만</span>
+                    </div>
+                    <p class="text-sm text-gray-500">데이터 분석 자동화 도구</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-lg font-bold mb-4">실시간 인기 도구</h2>
+            <div class="bg-white rounded-lg shadow divide-y">
+                <div class="p-4 flex items-center">
+                    <span class="text-lg font-bold text-custom mr-4">1</span>
+                    <div class="flex-1">
+                        <h3 class="font-bold">SlideAI</h3>
+                        <p class="text-sm text-gray-500">AI 프레젠테이션 생성기</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+                <div class="p-4 flex items-center">
+                    <span class="text-lg font-bold text-custom mr-4">2</span>
+                    <div class="flex-1">
+                        <h3 class="font-bold">AutoTask</h3>
+                        <p class="text-sm text-gray-500">업무 자동화 플랫폼</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+                <div class="p-4 flex items-center">
+                    <span class="text-lg font-bold text-custom mr-4">3</span>
+                    <div class="flex-1">
+                        <h3 class="font-bold">CodeBuddy</h3>
+                        <p class="text-sm text-gray-500">AI 코딩 어시스턴트</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-lg font-bold mb-4">SNS 실사용 후기</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="flex items-center mb-3">
+                        <img src="https://creatie.ai/ai/api/search-image?query=Professional headshot of a young Asian business woman with a friendly smile, wearing business attire against a neutral background&width=40&height=40&orientation=squarish&flag=32cb696c-1c2d-4656-b50e-5498f148d66d" class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <h3 class="font-bold">김지현</h3>
+                            <p class="text-sm text-gray-500">마케팅 매니저</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">WritingGPT로 콘텐츠 제작 시간이 절반으로 줄었어요. AI가 제안하는 문구가 정말 자연스럽고 퀄리티가 높습니다.</p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fab fa-twitter text-custom mr-2"></i>
+                        <span>2시간 전</span>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="flex items-center mb-3">
+                        <img src="https://creatie.ai/ai/api/search-image?query=Professional headshot of a young Asian business man wearing glasses and a suit, with a confident expression against a neutral background&width=40&height=40&orientation=squarish&flag=6c059f9b-2f0b-4444-abe2-7f653f850f9d" class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <h3 class="font-bold">박성민</h3>
+                            <p class="text-sm text-gray-500">데이터 분석가</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">DataMind AI의 자동 리포트 기능이 정말 편리해요. 복잡한 데이터도 쉽게 시각화해주고 인사이트 도출도 도와줍니다.</p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fab fa-linkedin text-custom mr-2"></i>
+                        <span>4시간 전</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t">
+        <div class="grid grid-cols-4 h-16">
+            <button class="flex flex-col items-center justify-center">
+                <i class="fas fa-home text-custom"></i>
+                <span class="text-xs mt-1">홈</span>
+            </button>
+            <button class="flex flex-col items-center justify-center">
+                <i class="fas fa-search text-gray-400"></i>
+                <span class="text-xs mt-1">검색</span>
+            </button>
+            <button class="flex flex-col items-center justify-center">
+                <i class="fas fa-bookmark text-gray-400"></i>
+                <span class="text-xs mt-1">북마크</span>
+            </button>
+            <button class="flex flex-col items-center justify-center">
+                <i class="fas fa-user text-gray-400"></i>
+                <span class="text-xs mt-1">내정보</span>
+            </button>
+        </div>
+    </nav>
+</body>
+</html>
