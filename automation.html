@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>업무자동화 AI 도구 - Serving AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-8">
+                    <a href="index.html" class="text-xl font-bold">Serving AI</a>
+                    <div class="hidden md:flex items-center space-x-4">
+                        <a href="document.html" class="hover:text-blue-600">문서작성</a>
+                        <a href="analysis.html" class="hover:text-blue-600">데이터분석</a>
+                        <a href="presentation.html" class="hover:text-blue-600">프레젠테이션</a>
+                        <a href="automation.html" class="text-blue-600 font-semibold">업무자동화</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="loginButton" class="hidden px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        로그인
+                    </button>
+                    <div id="userProfile" class="hidden items-center space-x-2">
+                        <img id="userPhoto" class="w-8 h-8 rounded-full" src="" alt="Profile">
+                        <span id="userName" class="text-gray-700"></span>
+                        <button id="logoutButton" class="text-sm text-gray-600 hover:text-gray-800">로그아웃</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">업무자동화 AI 도구</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Zapier AI -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Zapier AI</h2>
+                    <a href="https://zapier.com/ai" target="_blank" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                <p class="text-gray-600 mb-4">자연어로 업무 자동화 워크플로우를 생성하고 관리할 수 있는 AI 기반 자동화 플랫폼입니다.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">워크플로우</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">통합</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">자동화</span>
+                </div>
+            </div>
+
+            <!-- Power Automate -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Power Automate</h2>
+                    <a href="https://powerautomate.microsoft.com" target="_blank" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                <p class="text-gray-600 mb-4">Microsoft의 AI 기반 자동화 도구로, Office 365와 다양한 서비스를 연동하여 업무를 자동화합니다.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">RPA</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">워크플로우</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Office 통합</span>
+                </div>
+            </div>
+
+            <!-- Make.com -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Make.com</h2>
+                    <a href="https://www.make.com" target="_blank" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                <p class="text-gray-600 mb-4">시각적 워크플로우 빌더와 AI를 결합하여 복잡한 업무 프로세스를 자동화하는 플랫폼입니다.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">시각적 자동화</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">통합</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">모니터링</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8-2HvfQGrUqDXXxJMKPPd2zbHgybELII",
+            authDomain: "serving-ai-kr.firebaseapp.com",
+            projectId: "serving-ai-kr",
+            storageBucket: "serving-ai-kr.appspot.com",
+            messagingSenderId: "1014673865640",
+            appId: "1:1014673865640:web:c62a7eae3a8c8ef4f847ae",
+            measurementId: "G-XHBHP9NWRR"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+
+        // DOM 요소
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const userProfile = document.getElementById('userProfile');
+        const userPhoto = document.getElementById('userPhoto');
+        const userName = document.getElementById('userName');
+
+        // 로그인 상태 관찰자
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // 사용자가 로그인한 경우
+                loginButton.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                userProfile.classList.add('flex');
+                userPhoto.src = user.photoURL;
+                userName.textContent = user.displayName;
+            } else {
+                // 사용자가 로그아웃한 경우
+                loginButton.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+                userProfile.classList.remove('flex');
+            }
+        });
+
+        // 로그인 버튼 클릭 이벤트
+        loginButton.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider)
+                .catch((error) => {
+                    console.error('로그인 에러:', error);
+                });
+        });
+
+        // 로그아웃 버튼 클릭 이벤트
+        logoutButton.addEventListener('click', () => {
+            firebase.auth().signOut()
+                .catch((error) => {
+                    console.error('로그아웃 에러:', error);
+                });
+        });
+    </script>
+</body>
+</html>
