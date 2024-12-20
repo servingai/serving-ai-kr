@@ -100,6 +100,27 @@
             }
         });
     </script>
+    <style>
+        .category-btn {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .category-btn.active {
+            background-color: #000000;
+            color: white;
+        }
+        
+        .category-btn:not(.active) {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+        
+        .category-btn:hover:not(.active) {
+            background-color: #e5e7eb;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
@@ -144,104 +165,269 @@
     <main class="mt-16 mb-20 px-4">
         <nav class="overflow-x-auto py-4 -mx-4 mb-6">
             <div class="flex px-4 space-x-4 w-max">
-                <a href="document.html" class="px-4 py-2 bg-custom text-white !rounded-button whitespace-nowrap">문서작성</a>
-                <a href="analysis.html" class="px-4 py-2 bg-gray-100 text-gray-600 !rounded-button whitespace-nowrap">데이터분석</a>
-                <a href="presentation.html" class="px-4 py-2 bg-gray-100 text-gray-600 !rounded-button whitespace-nowrap">프레젠테이션</a>
-                <a href="automation.html" class="px-4 py-2 bg-gray-100 text-gray-600 !rounded-button whitespace-nowrap">업무자동화</a>
+                <button onclick="changeCategory('document')" class="category-btn active px-4 py-2 whitespace-nowrap">문서작성</button>
+                <button onclick="changeCategory('analysis')" class="category-btn px-4 py-2 whitespace-nowrap">데이터분석</button>
+                <button onclick="changeCategory('presentation')" class="category-btn px-4 py-2 whitespace-nowrap">프레젠테이션</button>
+                <button onclick="changeCategory('automation')" class="category-btn px-4 py-2 whitespace-nowrap">업무자동화</button>
             </div>
         </nav>
 
-        <section class="mb-8">
+        <!-- 맞춤 AI 도구 추천 섹션 -->
+        <section id="recommended-tools" class="mb-8">
             <h2 class="text-lg font-bold mb-4">맞춤 AI 도구 추천</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <img src="https://creatie.ai/ai/api/search-image?query=A professional UI of an AI writing assistant tool with a clean and minimal interface, showing document editing features and AI suggestions&width=150&height=150&orientation=squarish&flag=625f7f90-0149-4fcf-8654-fb8fe69af90e" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <h3 class="font-bold mb-1">WritingGPT</h3>
-                    <div class="flex items-center text-sm text-gray-600 mb-2">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <span>4.8</span>
-                        <span class="mx-2">|</span>
-                        <span>사용자 12.5만</span>
-                    </div>
-                    <p class="text-sm text-gray-500">AI 기반 문서 작성 및 교정 도구</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <img src="https://creatie.ai/ai/api/search-image?query=A professional UI of an AI data analysis tool showing charts, graphs and data visualization features with a modern interface&width=150&height=150&orientation=squarish&flag=b5be6713-2833-416d-9ee5-22d67eec458b" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <h3 class="font-bold mb-1">DataMind AI</h3>
-                    <div class="flex items-center text-sm text-gray-600 mb-2">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <span>4.7</span>
-                        <span class="mx-2">|</span>
-                        <span>사용자 8.3만</span>
-                    </div>
-                    <p class="text-sm text-gray-500">데이터 분석 자동화 도구</p>
-                </div>
+            <div id="tool-cards" class="grid grid-cols-2 gap-4">
+                <!-- 카드 내용은 JavaScript로 동적 변경됨 -->
             </div>
         </section>
 
-        <section class="mb-8">
+        <!-- 실시간 인기 도구 섹션 -->
+        <section id="popular-tools" class="mb-8">
             <h2 class="text-lg font-bold mb-4">실시간 인기 도구</h2>
-            <div class="bg-white rounded-lg shadow divide-y">
-                <div class="p-4 flex items-center">
-                    <span class="text-lg font-bold text-custom mr-4">1</span>
-                    <div class="flex-1">
-                        <h3 class="font-bold">SlideAI</h3>
-                        <p class="text-sm text-gray-500">AI 프레젠테이션 생성기</p>
-                    </div>
-                    <i class="fas fa-chevron-right text-gray-400"></i>
-                </div>
-                <div class="p-4 flex items-center">
-                    <span class="text-lg font-bold text-custom mr-4">2</span>
-                    <div class="flex-1">
-                        <h3 class="font-bold">AutoTask</h3>
-                        <p class="text-sm text-gray-500">업무 자동화 플랫폼</p>
-                    </div>
-                    <i class="fas fa-chevron-right text-gray-400"></i>
-                </div>
-                <div class="p-4 flex items-center">
-                    <span class="text-lg font-bold text-custom mr-4">3</span>
-                    <div class="flex-1">
-                        <h3 class="font-bold">CodeBuddy</h3>
-                        <p class="text-sm text-gray-500">AI 코딩 어시스턴트</p>
-                    </div>
-                    <i class="fas fa-chevron-right text-gray-400"></i>
-                </div>
+            <div id="popular-tool-list" class="bg-white rounded-lg shadow divide-y">
+                <!-- 리스트 내용은 JavaScript로 동적 변경됨 -->
             </div>
         </section>
 
-        <section class="mb-8">
+        <!-- SNS 실사용 후기 섹션 -->
+        <section id="user-reviews" class="mb-8">
             <h2 class="text-lg font-bold mb-4">SNS 실사용 후기</h2>
-            <div class="space-y-4">
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <div class="flex items-center mb-3">
-                        <img src="https://creatie.ai/ai/api/search-image?query=Professional headshot of a young Asian business woman with a friendly smile, wearing business attire against a neutral background&width=40&height=40&orientation=squarish&flag=32cb696c-1c2d-4656-b50e-5498f148d66d" class="w-10 h-10 rounded-full mr-3">
-                        <div>
-                            <h3 class="font-bold">김지현</h3>
-                            <p class="text-sm text-gray-500">마케팅 매니저</p>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-3">WritingGPT로 콘텐츠 제작 시간이 절반으로 줄었어요. AI가 제안하는 문구가 정말 자연스럽고 퀄리티가 높습니다.</p>
-                    <div class="flex items-center text-sm text-gray-500">
-                        <i class="fab fa-twitter text-custom mr-2"></i>
-                        <span>2시간 전</span>
-                    </div>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <div class="flex items-center mb-3">
-                        <img src="https://creatie.ai/ai/api/search-image?query=Professional headshot of a young Asian business man wearing glasses and a suit, with a confident expression against a neutral background&width=40&height=40&orientation=squarish&flag=6c059f9b-2f0b-4444-abe2-7f653f850f9d" class="w-10 h-10 rounded-full mr-3">
-                        <div>
-                            <h3 class="font-bold">박성민</h3>
-                            <p class="text-sm text-gray-500">데이터 분석가</p>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-3">DataMind AI의 자동 리포트 기능이 정말 편리해요. 복잡한 데이터도 쉽게 시각화해주고 인사이트 도출도 도와줍니다.</p>
-                    <div class="flex items-center text-sm text-gray-500">
-                        <i class="fab fa-linkedin text-custom mr-2"></i>
-                        <span>4시간 전</span>
-                    </div>
-                </div>
+            <div id="review-cards" class="space-y-4">
+                <!-- 리뷰 카드 내용은 JavaScript로 동적 변경됨 -->
             </div>
         </section>
+
+        <script>
+            // 카테고리별 도구 데이터
+            const toolsData = {
+                document: {
+                    recommended: [
+                        {
+                            name: 'WritingGPT',
+                            description: 'AI 기반 문서 작성 및 교정 도구',
+                            image: 'https://creatie.ai/ai/api/search-image?query=A professional UI of an AI writing assistant tool with a clean and minimal interface, showing document editing features and AI suggestions&width=150&height=150&orientation=squarish&flag=625f7f90-0149-4fcf-8654-fb8fe69af90e',
+                            rating: 4.8,
+                            users: '12.5만'
+                        },
+                        {
+                            name: 'DataMind AI',
+                            description: '데이터 분석 자동화 도구',
+                            image: 'https://creatie.ai/ai/api/search-image?query=A professional UI of an AI data analysis tool showing charts, graphs and data visualization features with a modern interface&width=150&height=150&orientation=squarish&flag=b5be6713-2833-416d-9ee5-22d67eec458b',
+                            rating: 4.7,
+                            users: '8.3만'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'SlideAI', description: 'AI 프레젠테이션 생성기' },
+                        { rank: 2, name: 'AutoTask', description: '업무 자동화 플랫폼' },
+                        { rank: 3, name: 'CodeBuddy', description: 'AI 코딩 어시스턴트' }
+                    ],
+                    reviews: [
+                        {
+                            name: '김지현',
+                            role: '마케팅 매니저',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional headshot of a young Asian business woman with a friendly smile, wearing business attire against a neutral background&width=40&height=40&orientation=squarish&flag=32cb696c-1c2d-4656-b50e-5498f148d66d',
+                            content: 'WritingGPT로 콘텐츠 제작 시간이 절반으로 줄었어요. AI가 제안하는 문구가 정말 자연스럽고 퀄리티가 높습니다.',
+                            platform: 'twitter',
+                            time: '2시간 전'
+                        },
+                        {
+                            name: '박성민',
+                            role: '데이터 분석가',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional headshot of a young Asian business man wearing glasses and a suit, with a confident expression against a neutral background&width=40&height=40&orientation=squarish&flag=6c059f9b-2f0b-4444-abe2-7f653f850f9d',
+                            content: 'DataMind AI의 자동 리포트 기능이 정말 편리해요. 복잡한 데이터도 쉽게 시각화해주고 인사이트 도출도 도와줍니다.',
+                            platform: 'linkedin',
+                            time: '4시간 전'
+                        }
+                    ]
+                },
+                analysis: {
+                    recommended: [
+                        {
+                            name: 'DataMind Pro',
+                            description: '고급 데이터 분석 및 시각화 도구',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional data analytics dashboard with modern UI showing various charts and AI insights&width=150&height=150&orientation=squarish',
+                            rating: 4.9,
+                            users: '15.2만'
+                        },
+                        {
+                            name: 'AI Analyst',
+                            description: '자동 데이터 인사이트 생성기',
+                            image: 'https://creatie.ai/ai/api/search-image?query=AI-powered business analytics tool interface with modern design&width=150&height=150&orientation=squarish',
+                            rating: 4.6,
+                            users: '9.8만'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'DataViz AI', description: '데이터 시각화 도구' },
+                        { rank: 2, name: 'SmartAnalytics', description: '비즈니스 분석 플랫폼' },
+                        { rank: 3, name: 'AI Insights', description: '자동 리포트 생성기' }
+                    ],
+                    reviews: [
+                        {
+                            name: '이수진',
+                            role: '비즈니스 애널리스트',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional Asian woman analyst&width=40&height=40&orientation=squarish',
+                            content: 'DataMind Pro의 자동 인사이트 기능이 놀랍습니다. 데이터 분석 시간이 크게 단축되었어요.',
+                            platform: 'linkedin',
+                            time: '1시간 전'
+                        },
+                        {
+                            name: '정민우',
+                            role: '데이터 사이언티스트',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional Asian man data scientist&width=40&height=40&orientation=squarish',
+                            content: 'AI Analyst의 예측 모델링 기능이 정확도가 매우 높습니다. 추천합니다!',
+                            platform: 'twitter',
+                            time: '3시간 전'
+                        }
+                    ]
+                },
+                presentation: {
+                    recommended: [
+                        {
+                            name: 'SlideGenius',
+                            description: 'AI 기반 프레젠테이션 디자인',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional presentation software interface with AI design suggestions&width=150&height=150&orientation=squarish',
+                            rating: 4.8,
+                            users: '11.3만'
+                        },
+                        {
+                            name: 'PitchPerfect',
+                            description: '자동 발표자료 생성기',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Modern presentation creation tool with AI features&width=150&height=150&orientation=squarish',
+                            rating: 4.7,
+                            users: '7.5만'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'DesignAI', description: '디자인 자동화 도구' },
+                        { rank: 2, name: 'SlideMaster', description: '프레젠테이션 마법사' },
+                        { rank: 3, name: 'StoryAI', description: '스토리텔링 도우미' }
+                    ],
+                    reviews: [
+                        {
+                            name: '최영희',
+                            role: '마케팅 디렉터',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional Asian woman marketing director&width=40&height=40&orientation=squarish',
+                            content: 'SlideGenius로 프레젠테이션 제작이 즐거워졌어요. 디자인이 항상 완벽합니다.',
+                            platform: 'instagram',
+                            time: '5시간 전'
+                        },
+                        {
+                            name: '한준서',
+                            role: '영업 매니저',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional Asian man sales manager&width=40&height=40&orientation=squarish',
+                            content: 'PitchPerfect의 템플릿이 매우 전문적이에요. 클라이언트들이 항상 감탄합니다.',
+                            platform: 'facebook',
+                            time: '6시간 전'
+                        }
+                    ]
+                },
+                automation: {
+                    recommended: [
+                        {
+                            name: 'TaskMaster AI',
+                            description: '업무 프로세스 자동화 도구',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional automation software interface with workflow automation features&width=150&height=150&orientation=squarish',
+                            rating: 4.9,
+                            users: '13.7만'
+                        },
+                        {
+                            name: 'WorkFlow AI',
+                            description: '지능형 업무 자동화 플랫폼',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Modern workflow automation tool interface with AI capabilities&width=150&height=150&orientation=squarish',
+                            rating: 4.8,
+                            users: '10.2만'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'AutoBot', description: '업무 자동화 봇' },
+                        { rank: 2, name: 'SmartFlow', description: '워크플로우 자동화' },
+                        { rank: 3, name: 'ProcessAI', description: '프로세스 최적화' }
+                    ],
+                    reviews: [
+                        {
+                            name: '박지원',
+                            role: '운영 매니저',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional Asian woman operations manager&width=40&height=40&orientation=squarish',
+                            content: 'TaskMaster AI로 반복 작업이 모두 자동화되었어요. 업무 효율이 크게 향상되었습니다.',
+                            platform: 'linkedin',
+                            time: '7시간 전'
+                        },
+                        {
+                            name: '김태훈',
+                            role: 'IT 관리자',
+                            image: 'https://creatie.ai/ai/api/search-image?query=Professional Asian man IT manager&width=40&height=40&orientation=squarish',
+                            content: 'WorkFlow AI의 커스터마이징 기능이 뛰어나요. 우리 회사에 딱 맞게 설정할 수 있었습니다.',
+                            platform: 'twitter',
+                            time: '8시간 전'
+                        }
+                    ]
+                }
+            };
+
+            // 카테고리 변경 함수
+            function changeCategory(category) {
+                // 버튼 스타일 업데이트
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`button[onclick="changeCategory('${category}')"]`).classList.add('active');
+
+                // 데이터 가져오기
+                const data = toolsData[category];
+
+                // 맞춤 AI 도구 추천 업데이트
+                const toolCards = document.getElementById('tool-cards');
+                toolCards.innerHTML = data.recommended.map(tool => `
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <img src="${tool.image}" class="w-full h-32 object-cover rounded-lg mb-3">
+                        <h3 class="font-bold mb-1">${tool.name}</h3>
+                        <div class="flex items-center text-sm text-gray-600 mb-2">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <span>${tool.rating}</span>
+                            <span class="mx-2">|</span>
+                            <span>사용자 ${tool.users}</span>
+                        </div>
+                        <p class="text-sm text-gray-500">${tool.description}</p>
+                    </div>
+                `).join('');
+
+                // 실시간 인기 도구 업데이트
+                const popularToolList = document.getElementById('popular-tool-list');
+                popularToolList.innerHTML = data.popular.map(tool => `
+                    <div class="p-4 flex items-center">
+                        <span class="text-lg font-bold text-custom mr-4">${tool.rank}</span>
+                        <div class="flex-1">
+                            <h3 class="font-bold">${tool.name}</h3>
+                            <p class="text-sm text-gray-500">${tool.description}</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                `).join('');
+
+                // SNS 실사용 후기 업데이트
+                const reviewCards = document.getElementById('review-cards');
+                reviewCards.innerHTML = data.reviews.map(review => `
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center mb-3">
+                            <img src="${review.image}" class="w-10 h-10 rounded-full mr-3">
+                            <div>
+                                <h3 class="font-bold">${review.name}</h3>
+                                <p class="text-sm text-gray-500">${review.role}</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">${review.content}</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fab fa-${review.platform} text-custom mr-2"></i>
+                            <span>${review.time}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 초기 로드 시 문서작성 카테고리 표시
+            changeCategory('document');
+        </script>
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t">
