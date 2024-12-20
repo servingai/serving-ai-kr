@@ -122,45 +122,17 @@
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
-        <div class="flex items-center justify-between px-4 py-3">
-            <h1 class="text-xl font-['Pacifico'] text-custom flex items-center min-w-[140px]">
-                <span>Serving AI</span>
-            </h1>
-            <div class="flex-1 mx-6">
-                <div class="relative">
-                    <input type="text" placeholder="AI 도구 검색" class="w-full pl-10 pr-4 py-2 text-sm border rounded-lg bg-gray-50">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<body class="bg-gray-100">
+    <!-- 상단 네비게이션 바 -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-xl font-bold text-gray-800">ServingAI</a>
                 </div>
-            </div>
-            
-            <!-- 로그인 전 -->
-            <div id="loginSection" class="flex items-center">
-                <button onclick="googleLogin()" type="button" class="flex items-center px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                    <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4 mr-2">
-                    <span class="text-sm">Google 로그인</span>
-                </button>
-            </div>
-            
-            <!-- 로그인 후 -->
-            <div id="userSection" class="hidden flex items-center">
-                <div class="flex items-center mr-2">
-                    <img id="userImage" src="https://via.placeholder.com/32" alt="User" class="w-8 h-8 rounded-full">
-                    <span id="userName" class="ml-2 text-sm font-medium">사용자</span>
-                </div>
-                <button id="userButton" onclick="signOut()" class="text-sm text-gray-600 hover:text-gray-800">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
-            <div class="hidden md:flex items-center space-x-4">
-                <a href="document.html" class="hover:text-blue-600">문서작성</a>
-                <a href="analysis.html" class="hover:text-blue-600">데이터분석</a>
-                <a href="presentation.html" class="hover:text-blue-600">프레젠테이션</a>
-                <a href="automation.html" class="hover:text-blue-600">업무자동화</a>
             </div>
         </div>
-    </header>
+    </nav>
 
     <main class="mt-16 mb-20 px-4">
         <nav class="overflow-x-auto py-4 -mx-4 mb-6">
@@ -446,16 +418,16 @@
                 <span class="text-xs mt-1">홈</span>
             </button>
             <button class="flex flex-col items-center justify-center">
-                <i class="fas fa-search text-gray-400"></i>
-                <span class="text-xs mt-1">검색</span>
-            </button>
-            <button class="flex flex-col items-center justify-center">
                 <i class="fas fa-bookmark text-gray-400"></i>
                 <span class="text-xs mt-1">북마크</span>
             </button>
             <button class="flex flex-col items-center justify-center">
                 <i class="fas fa-user text-gray-400"></i>
                 <span class="text-xs mt-1">내정보</span>
+            </button>
+            <button class="flex flex-col items-center justify-center">
+                <i class="fas fa-sign-out-alt text-gray-400"></i>
+                <span class="text-xs mt-1">로그아웃</span>
             </button>
         </div>
     </nav>
