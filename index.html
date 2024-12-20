@@ -395,15 +395,18 @@
                 // 실시간 인기 도구 업데이트
                 const popularToolList = document.getElementById('popular-tool-list');
                 popularToolList.innerHTML = data.popular.map(tool => `
-                    <div class="p-4 flex items-center">
-                        <span class="text-lg font-bold text-custom mr-4">${tool.rank}</span>
-                        <div class="flex-1">
-                            <h3 class="font-bold">${tool.name}</h3>
-                            <p class="text-sm text-gray-500">${tool.description}</p>
-                            <a href="${tool.url}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800">공식 웹사이트</a>
+                    <a href="${tool.url}" target="_blank" class="block">
+                        <div class="flex items-center p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-blue-600 font-semibold">${tool.rank}</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold">${tool.name}</h3>
+                                <p class="text-sm text-gray-500">${tool.description}</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
+                    </a>
                 `).join('');
 
                 // SNS 실사용 후기 업데이트
