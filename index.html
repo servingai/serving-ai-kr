@@ -217,9 +217,9 @@
                         }
                     ],
                     popular: [
-                        { rank: 1, name: 'ChatGPT', description: '다재다능한 AI 어시스턴트' },
-                        { rank: 2, name: 'Notion AI', description: '통합 문서 작성 도우미' },
-                        { rank: 3, name: 'Claude', description: '전문적인 문서 작성 지원' }
+                        { rank: 1, name: 'ChatGPT', description: 'OpenAI 챗봇', url: 'https://chat.openai.com' },
+                        { rank: 2, name: 'Notion AI', description: '노션 AI 어시스턴트', url: 'https://notion.so' },
+                        { rank: 3, name: 'Google Bard', description: '구글 AI 어시스턴트', url: 'https://bard.google.com' }
                     ],
                     reviews: [
                         {
@@ -258,9 +258,9 @@
                         }
                     ],
                     popular: [
-                        { rank: 1, name: 'Excel Copilot', description: 'AI 기반 엑셀 분석' },
-                        { rank: 2, name: 'Power BI', description: '비즈니스 인텔리전스 도구' },
-                        { rank: 3, name: 'Tableau', description: '데이터 시각화 플랫폼' }
+                        { rank: 1, name: 'Excel Copilot', description: 'AI 기반 엑셀 분석', url: 'https://microsoft.com/microsoft-365/excel' },
+                        { rank: 2, name: 'Power BI', description: '비즈니스 인텔리전스 도구', url: 'https://powerbi.microsoft.com' },
+                        { rank: 3, name: 'Tableau', description: '데이터 시각화 플랫폼', url: 'https://tableau.com' }
                     ],
                     reviews: [
                         {
@@ -299,9 +299,9 @@
                         }
                     ],
                     popular: [
-                        { rank: 1, name: 'PowerPoint Designer', description: 'MS 파워포인트 AI 도우미' },
-                        { rank: 2, name: 'Canva Pro', description: '올인원 디자인 플랫폼' },
-                        { rank: 3, name: 'Beautiful.ai', description: '자동 프레젠테이션 생성기' }
+                        { rank: 1, name: 'PowerPoint Designer', description: 'MS 파워포인트 AI 도우미', url: 'https://microsoft.com/microsoft-365/powerpoint' },
+                        { rank: 2, name: 'Canva Pro', description: '올인원 디자인 플랫폼', url: 'https://canva.com' },
+                        { rank: 3, name: 'Beautiful.ai', description: '자동 프레젠테이션 생성기', url: 'https://beautiful.ai' }
                     ],
                     reviews: [
                         {
@@ -340,9 +340,9 @@
                         }
                     ],
                     popular: [
-                        { rank: 1, name: 'Zapier', description: '앱 연동 자동화' },
-                        { rank: 2, name: 'n8n', description: '워크플로우 자동화' },
-                        { rank: 3, name: 'Make', description: '고급 워크플로우 자동화' }
+                        { rank: 1, name: 'Zapier', description: '앱 연동 자동화', url: 'https://zapier.com' },
+                        { rank: 2, name: 'n8n', description: '워크플로우 자동화', url: 'https://n8n.io' },
+                        { rank: 3, name: 'Make', description: '고급 워크플로우 자동화', url: 'https://make.com' }
                     ],
                     reviews: [
                         {
@@ -400,6 +400,7 @@
                         <div class="flex-1">
                             <h3 class="font-bold">${tool.name}</h3>
                             <p class="text-sm text-gray-500">${tool.description}</p>
+                            <a href="${tool.url}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800">공식 웹사이트</a>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
                     </div>
