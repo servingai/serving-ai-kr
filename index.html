@@ -7,12 +7,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom-v2.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
-    <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
-    <link rel="stylesheet" href="styles.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .text-custom { color: #4A90E2; }
+        .bg-custom { background-color: #4A90E2; }
+        .border-custom { border-color: #4A90E2; }
+        .category-btn {
+            transition: all 0.3s ease;
+        }
+        .category-btn:hover {
+            transform: translateY(-2px);
+        }
+        .category-btn.active {
+            background-color: #4A90E2;
+            color: white;
+        }
+        .tool-card {
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
     <!-- Firebase SDK 추가 -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -100,27 +118,7 @@
             }
         });
     </script>
-    <style>
-        .category-btn {
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-        
-        .category-btn.active {
-            background-color: #000000;
-            color: white;
-        }
-        
-        .category-btn:not(.active) {
-            background-color: #f3f4f6;
-            color: #4b5563;
-        }
-        
-        .category-btn:hover:not(.active) {
-            background-color: #e5e7eb;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100">
     <!-- 상단 네비게이션 바 -->
@@ -139,6 +137,7 @@
             <div class="flex px-4 space-x-4 w-max">
                 <button onclick="changeCategory('document')" class="category-btn active px-4 py-2 whitespace-nowrap">문서작성</button>
                 <button onclick="changeCategory('analysis')" class="category-btn px-4 py-2 whitespace-nowrap">데이터분석</button>
+                <button onclick="changeCategory('uiux')" class="category-btn px-4 py-2 whitespace-nowrap">UIUX디자인</button>
                 <button onclick="changeCategory('presentation')" class="category-btn px-4 py-2 whitespace-nowrap">프레젠테이션</button>
                 <button onclick="changeCategory('automation')" class="category-btn px-4 py-2 whitespace-nowrap">업무자동화</button>
             </div>
@@ -163,7 +162,7 @@
         <!-- SNS 실사용 후기 섹션 -->
         <section id="user-reviews" class="mb-8">
             <h2 class="text-lg font-bold mb-4">SNS 실사용 후기</h2>
-            <div id="review-cards" class="space-y-4">
+            <div id="reviews-container" class="space-y-4">
                 <!-- 리뷰 카드 내용은 JavaScript로 동적 변경됨 -->
             </div>
         </section>
@@ -249,6 +248,47 @@
                             image: 'https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083377_1280.jpg',
                             content: 'Power BI로 만드는 대시보드가 고객들에게 큰 호응을 얻고 있어요. 데이터를 직관적으로 이해하기 쉽게 보여줄 수 있습니다.',
                             platform: 'twitter',
+                            time: '5시간 전'
+                        }
+                    ]
+                },
+                uiux: {
+                    recommended: [
+                        {
+                            name: 'Galileo AI',
+                            description: 'AI 기반의 UI/UX 디자인 도구로, 디자인 아이디어를 자동으로 생성하고 최적화합니다.',
+                            image: 'https://cdn-1.webcatalog.io/catalog/galileo-ai/galileo-ai-icon-filled-256.png?v=1714782968140',
+                            rating: 4.9,
+                            users: '50만+'
+                        },
+                        {
+                            name: 'Creatie.ai',
+                            description: 'AI 기반의 디자인 자동화 도구로, 브랜드 아이덴티티에 맞는 디자인을 빠르게 생성합니다.',
+                            image: 'https://framerusercontent.com/images/92oPb2FnxFPaRsACv1aFbgc4bE.png?scale-down-to=512',
+                            rating: 4.7,
+                            users: '30만+'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'Figma', description: '실시간 협업이 가능한 UI/UX 디자인 도구', url: 'https://figma.com', pricing: '부분유료' },
+                        { rank: 2, name: 'Galileo AI', description: 'AI 기반 UI/UX 디자인 생성 도구', url: 'https://www.usegalileo.ai/explore', pricing: '무료' },
+                        { rank: 3, name: 'Creatie.ai', description: 'AI 기반 디자인 자동화 도구', url: 'https://creatie.ai', pricing: '무료' }
+                    ],
+                    reviews: [
+                        {
+                            name: '박서연',
+                            role: 'Product Manager',
+                            image: 'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2696947_1280.jpg',
+                            content: 'Galileo AI를 사용하면서 프로덕트 기획과 디자인 커뮤니케이션이 훨씬 수월해졌어요. AI가 제안하는 다양한 디자인 옵션들이 팀 브레인스토밍에 큰 도움이 됩니다.',
+                            platform: 'twitter',
+                            time: '2시간 전'
+                        },
+                        {
+                            name: '김민지',
+                            role: 'UX Designer',
+                            image: 'https://cdn.pixabay.com/photo/2018/01/15/07/52/woman-3083390_1280.jpg',
+                            content: 'Creatie.ai의 자동화 기능이 정말 놀라워요. 반복적인 디자인 작업 시간을 크게 줄일 수 있었고, 덕분에 더 창의적인 작업에 집중할 수 있게 되었습니다.',
+                            platform: 'instagram',
                             time: '5시간 전'
                         }
                     ]
@@ -352,7 +392,7 @@
                 const toolCards = document.getElementById('tool-cards');
                 toolCards.innerHTML = data.recommended.map(tool => `
                     <div class="bg-white p-4 rounded-lg shadow">
-                        <img src="${tool.image}" class="w-full h-32 object-cover rounded-lg mb-3">
+                        <img src="${tool.image}" class="w-32 h-32 object-contain rounded-lg mb-3">
                         <h3 class="font-bold mb-1">${tool.name}</h3>
                         <div class="flex items-center text-sm text-gray-600 mb-2">
                             <i class="fas fa-star text-yellow-400 mr-1"></i>
@@ -387,21 +427,33 @@
                 `).join('');
 
                 // SNS 실사용 후기 업데이트
-                const reviewCards = document.getElementById('review-cards');
-                reviewCards.innerHTML = data.reviews.map(review => `
-                    <div class="bg-white p-4 rounded-lg shadow">
+                updateReviews(category);
+            }
+
+            function updateReviews(category) {
+                const reviewsContainer = document.getElementById('reviews-container');
+                const currentCategory = toolsData[category];
+                
+                if (!currentCategory || !currentCategory.reviews) {
+                    console.error('Invalid category data:', category);
+                    return;
+                }
+
+                // 정적 리뷰 데이터 사용
+                reviewsContainer.innerHTML = currentCategory.reviews.map(review => `
+                    <div class="bg-white p-4 rounded-lg shadow mb-4">
                         <div class="flex items-center mb-3">
-                            <img src="${review.image}" class="w-10 h-10 rounded-full mr-3">
+                            <img src="${review.image}" alt="프로필" class="w-10 h-10 rounded-full mr-3">
                             <div>
-                                <h3 class="font-bold">${review.name}</h3>
-                                <p class="text-sm text-gray-500">${review.role}</p>
+                                <div class="font-bold">${review.name}</div>
+                                <div class="text-sm text-gray-500">${review.role}</div>
+                            </div>
+                            <div class="ml-auto">
+                                <i class="fab fa-${review.platform} text-gray-400"></i>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-600 mb-3">${review.content}</p>
-                        <div class="flex items-center text-sm text-gray-500">
-                            <i class="fab fa-${review.platform} text-custom mr-2"></i>
-                            <span>${review.time}</span>
-                        </div>
+                        <p class="text-gray-700">${review.content}</p>
+                        <div class="text-sm text-gray-500 mt-2">${review.time}</div>
                     </div>
                 `).join('');
             }

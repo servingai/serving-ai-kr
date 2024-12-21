@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIUX디자인 AI 도구</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .text-custom { color: #4A90E2; }
+        .bg-custom { background-color: #4A90E2; }
+        .border-custom { border-color: #4A90E2; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- 상단 네비게이션 바 -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <a href="index.html" class="text-xl font-bold text-custom">AI 도구 추천</a>
+                <div class="flex space-x-4">
+                    <a href="document.html" class="text-gray-600 hover:text-custom">문서작성</a>
+                    <a href="analysis.html" class="text-gray-600 hover:text-custom">데이터분석</a>
+                    <a href="uiux.html" class="text-custom">UIUX디자인</a>
+                    <a href="presentation.html" class="text-gray-600 hover:text-custom">프레젠테이션</a>
+                    <a href="automation.html" class="text-gray-600 hover:text-custom">업무자동화</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- 맞춤 AI 도구 섹션 -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">맞춤 AI 도구</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 갈릴레오AI -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-start">
+                        <img src="https://galileo-ai.com/logo.png" alt="갈릴레오AI" class="w-16 h-16 rounded-lg mr-4">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">갈릴레오AI</h3>
+                            <div class="flex items-center mb-2">
+                                <div class="text-yellow-400 mr-2">★★★★★</div>
+                                <span class="text-gray-600">4.9</span>
+                                <span class="text-gray-400 mx-2">|</span>
+                                <span class="text-gray-600">50만+ 이용자</span>
+                            </div>
+                            <p class="text-gray-600">AI 기반의 UI/UX 디자인 도구로, 디자인 아이디어를 자동으로 생성하고 최적화합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Creatie.ai -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-start">
+                        <img src="https://creatie.ai/logo.png" alt="Creatie.ai" class="w-16 h-16 rounded-lg mr-4">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Creatie.ai</h3>
+                            <div class="flex items-center mb-2">
+                                <div class="text-yellow-400 mr-2">★★★★☆</div>
+                                <span class="text-gray-600">4.7</span>
+                                <span class="text-gray-400 mx-2">|</span>
+                                <span class="text-gray-600">30만+ 이용자</span>
+                            </div>
+                            <p class="text-gray-600">AI 기반의 디자인 자동화 도구로, 브랜드 아이덴티티에 맞는 디자인을 빠르게 생성합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 실시간 인기 도구 섹션 -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">실시간 인기 도구</h2>
+            <div class="bg-white rounded-lg shadow-md">
+                <!-- Figma -->
+                <div class="border-b p-4 flex items-center">
+                    <span class="text-2xl font-bold text-custom mr-4">1</span>
+                    <div class="flex-grow">
+                        <h3 class="font-semibold">Figma</h3>
+                        <p class="text-sm text-gray-600">실시간 협업이 가능한 UI/UX 디자인 도구</p>
+                    </div>
+                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">부분유료</span>
+                </div>
+                <!-- 갈릴레오 AI -->
+                <div class="border-b p-4 flex items-center">
+                    <span class="text-2xl font-bold text-custom mr-4">2</span>
+                    <div class="flex-grow">
+                        <h3 class="font-semibold">갈릴레오 AI</h3>
+                        <p class="text-sm text-gray-600">AI 기반 UI/UX 디자인 생성 도구</p>
+                    </div>
+                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">무료</span>
+                </div>
+                <!-- Creatie AI -->
+                <div class="p-4 flex items-center">
+                    <span class="text-2xl font-bold text-custom mr-4">3</span>
+                    <div class="flex-grow">
+                        <h3 class="font-semibold">Creatie AI</h3>
+                        <p class="text-sm text-gray-600">AI 기반 디자인 자동화 도구</p>
+                    </div>
+                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">유료</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SNS 실사용 후기 섹션 -->
+        <section>
+            <h2 class="text-2xl font-bold mb-6">SNS 실사용 후기</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- PM/PO 후기 -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-start mb-4">
+                        <img src="https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2696947_1280.jpg" alt="프로필 이미지" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h3 class="font-semibold">박서연</h3>
+                            <p class="text-sm text-gray-600">Product Manager</p>
+                        </div>
+                        <div class="ml-auto">
+                            <i class="fab fa-twitter text-blue-400"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-700">"갈릴레오AI를 사용하면서 프로덕트 기획과 디자인 커뮤니케이션이 훨씬 수월해졌어요. AI가 제안하는 다양한 디자인 옵션들이 팀 브레인스토밍에 큰 도움이 됩니다."</p>
+                    <p class="text-sm text-gray-500 mt-4">2시간 전</p>
+                </div>
+                <!-- 디자이너 후기 -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-start mb-4">
+                        <img src="https://cdn.pixabay.com/photo/2018/01/15/07/52/woman-3083390_1280.jpg" alt="프로필 이미지" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h3 class="font-semibold">김민지</h3>
+                            <p class="text-sm text-gray-600">UX Designer</p>
+                        </div>
+                        <div class="ml-auto">
+                            <i class="fab fa-instagram text-pink-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-700">"Creatie.ai의 자동화 기능이 정말 놀라워요. 반복적인 디자인 작업 시간을 크게 줄일 수 있었고, 덕분에 더 창의적인 작업에 집중할 수 있게 되었습니다."</p>
+                    <p class="text-sm text-gray-500 mt-4">5시간 전</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+</body>
+</html>
