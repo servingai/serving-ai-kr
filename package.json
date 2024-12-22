@@ -1,0 +1,12 @@
+{
+  "name": "ai-tool-recommendation",
+  "version": "1.0.0",
+  "description": "AI 도구 추천 웹사이트",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
+    "watch": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

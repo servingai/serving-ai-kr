@@ -155,14 +155,15 @@
         // Firestore 오프라인 지원 설정
         const initializeFirestore = async () => {
             try {
-                await db.enablePersistence({ synchronizeTabs: true });
-                console.log('Firestore persistence enabled');
+                // 새로운 캐시 설정 방식 사용
+                const settings = {
+                    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+                    cache: true
+                };
+                db.settings(settings);
+                console.log('Firestore cache settings applied');
             } catch (err) {
-                if (err.code == 'failed-precondition') {
-                    console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-                } else if (err.code == 'unimplemented') {
-                    console.warn('The current browser does not support all of the features required to enable persistence');
-                }
+                console.warn('Firestore cache initialization error:', err);
             }
         };
 
