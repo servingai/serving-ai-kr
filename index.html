@@ -277,20 +277,30 @@
                         prompt: 'select_account'
                     });
                     
-                    auth.signInWithPopup(provider)
-                        .then((result) => {
-                            console.log('Login successful:', result.user.email);
-                        })
+                    // 리디렉션 방식으로 로그인
+                    auth.signInWithRedirect(provider)
                         .catch((error) => {
                             console.error('로그인 에러:', error);
-                            if (error.code === 'auth/popup-blocked') {
-                                // 팝업이 차단된 경우 리디렉션으로 시도
-                                return auth.signInWithRedirect(provider);
-                            }
                             alert('로그인 중 오류가 발생했습니다.');
                         });
                 });
             }
+
+            // 리디렉션 결과 처리
+            auth.getRedirectResult()
+                .then((result) => {
+                    if (result.user) {
+                        console.log('Redirect login successful:', result.user.email);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Redirect login error:', error);
+                    if (error.code === 'auth/popup-closed-by-user') {
+                        console.log('User closed the login window');
+                    } else {
+                        alert('로그인 중 오류가 발생했습니다.');
+                    }
+                });
 
             // 로그아웃 함수
             window.signOut = function() {
