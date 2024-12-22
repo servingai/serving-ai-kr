@@ -30,10 +30,25 @@
             transform: translateY(-5px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
+        .login-btn {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .user-profile {
+            display: none;
+        }
+        .user-profile.active {
+            display: flex;
+        }
     </style>
     <!-- Firebase SDK 추가 -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <!-- Firebase 초기화 스크립트 -->
     <script>
@@ -50,6 +65,7 @@
         // Firebase 초기화
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore();
         
         // Google 로그인 함수
         function googleLogin() {
@@ -123,10 +139,19 @@
 <body class="bg-gray-100">
     <!-- 상단 네비게이션 바 -->
     <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-16">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-xl font-bold">AI 도구 추천</div>
+                <!-- 로그인 버튼 및 프로필 영역 추가 -->
                 <div class="flex items-center">
-                    <a href="/" class="text-xl font-bold text-gray-800">ServingAI</a>
+                    <button id="loginButton" class="login-btn bg-custom text-white px-4 py-2 rounded-lg">
+                        구글로 시작하기
+                    </button>
+                    <div id="userProfile" class="user-profile items-center ml-4">
+                        <img id="userPhoto" class="w-8 h-8 rounded-full mr-2" src="" alt="프로필">
+                        <span id="userName" class="text-gray-700"></span>
+                        <button id="logoutButton" class="ml-4 text-gray-500 hover:text-gray-700">로그아웃</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -483,5 +508,59 @@
             </button>
         </div>
     </nav>
+
+    <script>
+        // Firebase 인증 기능 추가
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+        
+        // UI 요소
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const userProfile = document.getElementById('userProfile');
+        const userPhoto = document.getElementById('userPhoto');
+        const userName = document.getElementById('userName');
+
+        // 로그인 상태 관찰자
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // 사용자가 로그인한 경우
+                loginButton.style.display = 'none';
+                userProfile.classList.add('active');
+                userPhoto.src = user.photoURL;
+                userName.textContent = user.displayName;
+                
+                // Firestore에 사용자 정보 저장
+                const userRef = db.collection('users').doc(user.uid);
+                userRef.set({
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            } else {
+                // 로그아웃 상태
+                loginButton.style.display = 'block';
+                userProfile.classList.remove('active');
+            }
+        });
+
+        // 로그인 버튼 클릭 이벤트
+        loginButton.addEventListener('click', () => {
+            auth.signInWithPopup(provider)
+                .catch((error) => {
+                    console.error('로그인 에러:', error);
+                    alert('로그인 중 오류가 발생했습니다.');
+                });
+        });
+
+        // 로그아웃 버튼 클릭 이벤트
+        logoutButton.addEventListener('click', () => {
+            auth.signOut()
+                .catch((error) => {
+                    console.error('로그아웃 에러:', error);
+                });
+        });
+    </script>
 </body>
 </html>
