@@ -298,7 +298,7 @@
             try {
                 await db.collection('users').doc(user.uid).set(userInfo);
                 appState.log('사용자 정보 저장 성공');
-                appState.hasCheckedUserInfo = true;
+                appState.hasCheckedUserInfo = true;  // 여기서 상태를 true로 설정
                 modalController.hide();
                 return true;
             } catch (error) {
