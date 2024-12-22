@@ -38,6 +38,43 @@
             transform: translateY(-2px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        .google-btn {
+            width: 184px;
+            height: 42px;
+            background-color: #4285f4;
+            border-radius: 2px;
+            box-shadow: 0 3px 4px 0 rgba(0,0,0,.25);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .google-btn:hover {
+            box-shadow: 0 0 6px #4285f4;
+        }
+        .google-btn:active {
+            background: #1669F2;
+        }
+        .google-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            border-radius: 2px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .google-icon {
+            width: 18px;
+            height: 18px;
+        }
+        .btn-text {
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.2px;
+            margin-left: 24px;
+            margin-right: 16px;
+        }
         .user-profile {
             display: none;
         }
@@ -54,83 +91,69 @@
     <script>
         // Firebase 구성
         const firebaseConfig = {
-            apiKey: "AIzaSyAkGS-4rZyuRjYJcdkpTHMX-jH-ODWQsU4",
-            authDomain: "servingai-af0b7.firebaseapp.com",
-            projectId: "servingai-af0b7",
-            storageBucket: "servingai-af0b7.appspot.com",
-            messagingSenderId: "961797414957",
-            appId: "1:961797414957:web:project-961797414957"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-project-id.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Firebase 초기화
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        
+
         // Google 로그인 함수
         function googleLogin() {
-            console.log('Google login clicked'); // 디버깅용 로그
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider)
                 .then((result) => {
-                    console.log('Login successful:', result.user); // 디버깅용 로그
-                    const user = result.user;
-                    updateUIForLoggedInUser(user);
+                    console.log('로그인 성공:', result.user);
                 })
                 .catch((error) => {
-                    console.error("로그인 에러:", error);
-                    alert("로그인 중 오류가 발생했습니다: " + error.message);
+                    console.error('로그인 에러:', error);
+                    alert('로그인 중 오류가 발생했습니다.');
                 });
         }
-        
+
         // 로그아웃 함수
         function signOut() {
             auth.signOut()
                 .then(() => {
-                    console.log('Logout successful'); // 디버깅용 로그
-                    updateUIForLoggedOutUser();
+                    console.log('로그아웃 성공');
                 })
                 .catch((error) => {
-                    console.error("로그아웃 에러:", error);
+                    console.error('로그아웃 에러:', error);
                 });
         }
-        
-        // UI 업데이트 함수
-        function updateUIForLoggedInUser(user) {
-            const userButton = document.getElementById('userButton');
-            const userImage = document.getElementById('userImage');
-            const userName = document.getElementById('userName');
-            
-            if (userImage) userImage.src = user.photoURL || 'https://via.placeholder.com/32';
-            if (userName) userName.textContent = user.displayName || '사용자';
-            if (userButton) userButton.onclick = signOut;
-            
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('userSection').classList.remove('hidden');
-        }
-        
-        function updateUIForLoggedOutUser() {
-            document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('userSection').classList.add('hidden');
-        }
-        
-        // 인증 상태 변경 감지
-        auth.onAuthStateChanged((user) => {
-            console.log('Auth state changed:', user ? 'logged in' : 'logged out'); // 디버깅용 로그
-            if (user) {
-                updateUIForLoggedInUser(user);
-            } else {
-                updateUIForLoggedOutUser();
-            }
-        });
 
-        // 페이지 로드 시 초기 상태 설정
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentUser = auth.currentUser;
-            if (currentUser) {
-                updateUIForLoggedInUser(currentUser);
+        // 로그인 상태 관찰자
+        auth.onAuthStateChanged((user) => {
+            const loginButton = document.getElementById('loginButton');
+            const userProfile = document.getElementById('userProfile');
+            const userPhoto = document.getElementById('userPhoto');
+            const userName = document.getElementById('userName');
+
+            if (user) {
+                // 사용자가 로그인한 경우
+                loginButton.style.display = 'none';
+                userProfile.classList.add('active');
+                userPhoto.src = user.photoURL || 'https://via.placeholder.com/32';
+                userName.textContent = user.displayName;
+                
+                // Firestore에 사용자 정보 저장
+                const userRef = db.collection('users').doc(user.uid);
+                userRef.set({
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
             } else {
-                updateUIForLoggedOutUser();
+                // 로그아웃 상태
+                loginButton.style.display = 'flex';
+                userProfile.classList.remove('active');
             }
         });
     </script>
@@ -141,16 +164,19 @@
     <nav class="bg-white shadow-lg">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between items-center py-4">
-                <div class="text-xl font-bold">AI 도구 추천</div>
+                <a href="/" class="text-xl font-bold text-gray-800">ServingAI</a>
                 <!-- 로그인 버튼 및 프로필 영역 추가 -->
                 <div class="flex items-center">
-                    <button id="loginButton" class="login-btn bg-custom text-white px-4 py-2 rounded-lg">
-                        구글로 시작하기
-                    </button>
+                    <div id="loginButton" class="google-btn" onclick="googleLogin()">
+                        <div class="google-icon-wrapper">
+                            <img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo"/>
+                        </div>
+                        <p class="btn-text">Google로 시작하기</p>
+                    </div>
                     <div id="userProfile" class="user-profile items-center ml-4">
                         <img id="userPhoto" class="w-8 h-8 rounded-full mr-2" src="" alt="프로필">
                         <span id="userName" class="text-gray-700"></span>
-                        <button id="logoutButton" class="ml-4 text-gray-500 hover:text-gray-700">로그아웃</button>
+                        <button id="logoutButton" class="ml-4 text-gray-500 hover:text-gray-700" onclick="signOut()">로그아웃</button>
                     </div>
                 </div>
             </div>
