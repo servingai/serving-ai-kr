@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com/3.4.0"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -157,78 +157,87 @@
         };
 
         // Firebase 앱 초기화
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
 
         // Auth 및 Firestore 인스턴스 가져오기
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Firestore 오프라인 지원 설정
-        const initializeFirestore = async () => {
-            try {
-                // 새로운 캐시 설정 방식 사용
-                const settings = {
-                    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-                    cache: true
-                };
-                db.settings(settings);
-                console.log('Firestore cache settings applied');
-            } catch (err) {
-                console.warn('Firestore cache initialization error:', err);
+        // 로그인 상태 관찰자
+        auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? user.email : 'No user');
+            
+            const loginButton = document.getElementById('loginButton');
+            const userProfile = document.getElementById('userProfile');
+            const userInfoModal = document.getElementById('userInfoModal');
+
+            if (!loginButton || !userProfile || !userInfoModal) {
+                console.error('Required DOM elements not found');
+                return;
             }
-        };
 
-        // 초기화 실행
-        initializeFirestore();
+            if (user) {
+                console.log('User logged in:', user.email);
+                loginButton.style.display = 'none';
+                userProfile.style.display = 'flex';
+                
+                // 프로필 업데이트
+                const userPhoto = document.getElementById('userPhoto');
+                const userName = document.getElementById('userName');
+                if (userPhoto) userPhoto.src = user.photoURL || 'https://via.placeholder.com/32';
+                if (userName) userName.textContent = user.displayName;
 
-        // Firestore 오프라인 지원 활성화
-        // db.enablePersistence()
-        //     .catch((err) => {
-        //         if (err.code == 'failed-precondition') {
-        //             console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-        //         } else if (err.code == 'unimplemented') {
-        //             console.log('The current browser does not support all of the features required to enable persistence');
-        //         }
-        //     });
-
-        // 네트워크 상태 모니터링
-        // db.enableNetwork()
-        //     .then(() => {
-        //         console.log("Firestore network connectivity restored.");
-        //     })
-        //     .catch((err) => {
-        //         console.error("Error enabling network:", err);
-        //     });
-
-        // 오류 처리 함수
-        function handleFirestoreError(error) {
-            console.error('Firestore 오류:', error);
-            if (error.code === 'unavailable') {
-                // 네트워크 재연결 시도
-                // db.enableNetwork()
-                //     .then(() => console.log('네트워크 재연결 성공'))
-                //     .catch(err => console.error('네트워크 재연결 실패:', err));
+                // 사용자 정보 확인
+                console.log('Checking user info in Firestore...');
+                db.collection('users').doc(user.uid).get()
+                    .then((doc) => {
+                        console.log('Firestore doc:', doc.exists ? 'exists' : 'does not exist');
+                        if (!doc.exists) {
+                            console.log('New user, creating document...');
+                            // 새 사용자인 경우
+                            return db.collection('users').doc(user.uid).set({
+                                name: user.displayName,
+                                email: user.email,
+                                photoURL: user.photoURL,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            }).then(() => {
+                                console.log('New user document created, showing modal');
+                                userInfoModal.style.display = 'flex';
+                                return null;
+                            });
+                        } else {
+                            const data = doc.data();
+                            console.log('Existing user data:', data);
+                            if (!data.job || !data.experience) {
+                                console.log('Missing job/experience info, showing modal');
+                                userInfoModal.style.display = 'flex';
+                            } else {
+                                console.log('User has complete profile');
+                                userInfoModal.style.display = 'none';
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('사용자 정보 처리 중 오류:', error);
+                    });
+            } else {
+                console.log('User logged out');
+                loginButton.style.display = 'flex';
+                userProfile.style.display = 'none';
+                userInfoModal.style.display = 'none';
             }
-        }
-
-        // Firestore 작업 래퍼 함수
-        async function firestoreOperation(operation) {
-            try {
-                return await operation();
-            } catch (error) {
-                handleFirestoreError(error);
-                throw error;
-            }
-        }
+        });
 
         // DOM이 로드된 후 초기화
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded');
 
             // 사용자 정보 폼 제출 처리
             const userInfoForm = document.getElementById('userInfoForm');
             if (userInfoForm) {
-                userInfoForm.addEventListener('submit', async (e) => {
+                userInfoForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const user = auth.currentUser;
                     if (!user) {
@@ -239,101 +248,59 @@
                     const job = document.getElementById('job').value;
                     const experience = document.getElementById('experience').value;
 
-                    try {
-                        await db.collection('users').doc(user.uid).update({
-                            job: job,
-                            experience: experience,
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
+                    console.log('Updating user info:', { job, experience });
+                    db.collection('users').doc(user.uid).update({
+                        job: job,
+                        experience: experience,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    })
+                    .then(() => {
                         console.log('User info updated successfully');
-                        document.getElementById('userInfoModal').classList.remove('active');
-                    } catch (error) {
+                        const userInfoModal = document.getElementById('userInfoModal');
+                        if (userInfoModal) {
+                            userInfoModal.style.display = 'none';
+                        }
+                    })
+                    .catch((error) => {
                         console.error('Error updating user info:', error);
                         alert('정보 저장 중 오류가 발생했습니다.');
-                    }
+                    });
                 });
             }
 
             // 로그인 버튼에 이벤트 리스너 추가
             const loginButton = document.getElementById('loginButton');
             if (loginButton) {
-                loginButton.addEventListener('click', async () => {
-                    try {
-                        console.log('Login button clicked');
-                        const provider = new firebase.auth.GoogleAuthProvider();
-                        await auth.signInWithRedirect(provider);
-                        console.log('Redirect initiated');
-                    } catch (error) {
-                        console.error('로그인 에러:', error);
-                        alert('로그인 중 오류가 발생했습니다.');
-                    }
+                loginButton.addEventListener('click', () => {
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    provider.setCustomParameters({
+                        prompt: 'select_account'
+                    });
+                    
+                    auth.signInWithPopup(provider)
+                        .then((result) => {
+                            console.log('Login successful:', result.user.email);
+                        })
+                        .catch((error) => {
+                            console.error('로그인 에러:', error);
+                            if (error.code === 'auth/popup-blocked') {
+                                // 팝업이 차단된 경우 리디렉션으로 시도
+                                return auth.signInWithRedirect(provider);
+                            }
+                            alert('로그인 중 오류가 발생했습니다.');
+                        });
                 });
             }
 
-            // 로그인 상태 관찰자
-            auth.onAuthStateChanged(async (user) => {
-                console.log('Auth state changed:', user ? user.email : 'No user');
-                
-                const loginButton = document.getElementById('loginButton');
-                const userProfile = document.getElementById('userProfile');
-                const userInfoModal = document.getElementById('userInfoModal');
-
-                if (!loginButton || !userProfile || !userInfoModal) {
-                    console.error('Required DOM elements not found');
-                    return;
-                }
-
-                if (user) {
-                    try {
-                        console.log('User logged in:', user.email);
-                        loginButton.style.display = 'none';
-                        userProfile.classList.add('active');
-
-                        // 사용자 정보 확인
-                        const userRef = db.collection('users').doc(user.uid);
-                        const doc = await userRef.get();
-                        
-                        if (!doc.exists) {
-                            // 새 사용자인 경우
-                            await userRef.set({
-                                name: user.displayName,
-                                email: user.email,
-                                photoURL: user.photoURL,
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                            });
-                            userInfoModal.classList.add('active');
-                            userInfoModal.style.display = 'flex';
-                        } else if (!doc.data().job || !doc.data().experience) {
-                            // 기존 사용자지만 직군/연차 정보가 없는 경우
-                            userInfoModal.classList.add('active');
-                            userInfoModal.style.display = 'flex';
-                        }
-
-                        // 프로필 업데이트
-                        document.getElementById('userPhoto').src = user.photoURL || 'https://via.placeholder.com/32';
-                        document.getElementById('userName').textContent = user.displayName;
-                        
-                    } catch (error) {
-                        console.error('사용자 정보 처리 중 오류:', error);
-                    }
-                } else {
-                    console.log('User logged out');
-                    loginButton.style.display = 'flex';
-                    userProfile.classList.remove('active');
-                    userInfoModal.classList.remove('active');
-                    userInfoModal.style.display = 'none';
-                }
-            });
-
             // 로그아웃 함수
-            window.signOut = async function() {
-                try {
-                    console.log('Starting sign out');
-                    await auth.signOut();
-                    console.log('로그아웃 성공');
-                } catch (error) {
-                    console.error('로그아웃 에러:', error);
-                }
+            window.signOut = function() {
+                auth.signOut()
+                    .then(() => {
+                        console.log('로그아웃 성공');
+                    })
+                    .catch((error) => {
+                        console.error('로그아웃 에러:', error);
+                    });
             }
 
             // 카테고리 버튼에 클릭 이벤트 추가
