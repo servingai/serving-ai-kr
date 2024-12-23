@@ -1,5 +1,6 @@
 // Firebase 인증 관련 함수들
-import { db, auth } from './firebase-config.js';
+import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // 네트워크 상태 모니터링
 let isOffline = false;
@@ -19,13 +20,13 @@ window.addEventListener('offline', () => {
 // Google 로그인
 export async function signInWithGoogle() {
     try {
-        const provider = new firebase.auth.GoogleAuthProvider();
+        const provider = new GoogleAuthProvider();
         provider.setCustomParameters({
             prompt: 'select_account'
         });
         
         console.log('Google 로그인 시도...');
-        const result = await auth.signInWithPopup(provider);
+        const result = await signInWithPopup(window.auth, provider);
         console.log('로그인 성공:', result.user.email);
         
         // 사용자 정보 Firestore에 저장
@@ -43,7 +44,7 @@ export async function signInWithGoogle() {
 // 로그아웃
 export async function signOut() {
     try {
-        await auth.signOut();
+        await window.auth.signOut();
         console.log('로그아웃 성공');
     } catch (error) {
         console.error('로그아웃 에러:', error);
@@ -54,21 +55,22 @@ export async function signOut() {
 // 사용자 정보 Firestore에 저장
 async function saveUserToFirestore(user) {
     try {
-        const userRef = db.collection('users').doc(user.uid);
-        await userRef.set({
+        const userRef = doc(window.db, 'users', user.uid);
+        await setDoc(userRef, {
             email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+            lastLogin: new Date()
         }, { merge: true });
         console.log('사용자 정보 저장 성공');
     } catch (error) {
-        console.error('사용자 정보 저장 실패:', error);
+        console.error('사용자 정보 저장 에러:', error);
+        throw error;
     }
 }
 
 // 인증 상태 변경 리스너
-auth.onAuthStateChanged((user) => {
+window.auth.onAuthStateChanged((user) => {
     console.log('인증 상태 변경:', user ? user.email : '로그아웃');
     updateUIForAuth(user);
 });
@@ -77,19 +79,21 @@ auth.onAuthStateChanged((user) => {
 function updateUIForAuth(user) {
     const loginButton = document.getElementById('loginButton');
     const userProfile = document.getElementById('userProfile');
-    const userPhoto = document.getElementById('userPhoto');
-    const userName = document.getElementById('userName');
-
-    if (user) {
-        // 로그인 상태
-        loginButton.style.display = 'none';
-        userProfile.style.display = 'flex';
-        if (userPhoto) userPhoto.src = user.photoURL || '';
-        if (userName) userName.textContent = user.displayName || user.email;
-    } else {
-        // 로그아웃 상태
-        loginButton.style.display = 'flex';
-        userProfile.style.display = 'none';
+    
+    if (loginButton && userProfile) {
+        if (user) {
+            loginButton.style.display = 'none';
+            userProfile.style.display = 'flex';
+            
+            const userImage = userProfile.querySelector('img');
+            const userName = userProfile.querySelector('.user-name');
+            
+            if (userImage) userImage.src = user.photoURL || 'default-profile.png';
+            if (userName) userName.textContent = user.displayName || user.email;
+        } else {
+            loginButton.style.display = 'block';
+            userProfile.style.display = 'none';
+        }
     }
 }
 
@@ -97,8 +101,8 @@ export const checkUserInfo = async (user) => {
     if (!user?.uid) return false;
 
     try {
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        return userDoc.exists && userDoc.data()?.job && userDoc.data()?.experience;
+        const userDoc = await getDoc(doc(window.db, 'users', user.uid));
+        return userDoc.exists() && userDoc.data()?.job && userDoc.data()?.experience;
     } catch (error) {
         console.error('사용자 정보 확인 중 오류:', error);
         return false;
@@ -117,7 +121,7 @@ export const updateUserInfo = async (user, job, experience) => {
     };
 
     try {
-        await db.collection('users').doc(user.uid).set(userInfo, { merge: true });
+        await setDoc(doc(window.db, 'users', user.uid), userInfo, { merge: true });
         return true;
     } catch (error) {
         console.error('사용자 정보 저장 실패:', error);
@@ -125,4 +129,4 @@ export const updateUserInfo = async (user, job, experience) => {
     }
 };
 
-export { auth, db };
+export { window.auth as auth, window.db as db };
