@@ -172,6 +172,15 @@ export const toolsData = {
     // ... 다른 카테고리 데이터 ...
 };
 
+export const jobTypes = [
+    { id: 'developer', name: '개발자' },
+    { id: 'designer', name: '디자이너' },
+    { id: 'pm-po', name: 'PM/PO/기획자' },
+    { id: 'data-analyst', name: '데이터 분석가' },
+    { id: 'researcher', name: '연구원' },
+    { id: 'marketer', name: '마케터' }
+];
+
 export const categories = [
     { id: 'document', name: '문서작성' },
     { id: 'analysis', name: '데이터분석' },

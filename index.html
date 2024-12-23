@@ -6,9 +6,9 @@
     <title>직장인 AI 도구 추천</title>
     
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -765,18 +765,18 @@
         <!-- 사용자 정보 입력 모달 -->
         <div id="userInfoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
             <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
-                <h2 class="text-2xl font-bold mb-6">추가 정보 입력</h2>
+                <h2 class="text-2xl font-bold mb-6">기본 정보 입력</h2>
                 <form id="userInfoForm" class="space-y-6">
                     <div>
                         <label for="jobSelect" class="block text-sm font-medium text-gray-700 mb-2">직군</label>
-                        <select id="jobSelect" name="job" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">선택해주세요</option>
+                        <select id="jobSelect" class="w-full p-2 border rounded-md">
+                            <option value="">직군 선택</option>
                             <option value="developer">개발자</option>
                             <option value="designer">디자이너</option>
+                            <option value="pm-po">PM/PO/기획자</option>
+                            <option value="data-analyst">데이터 분석가</option>
+                            <option value="researcher">연구원</option>
                             <option value="marketer">마케터</option>
-                            <option value="planner">기획자</option>
-                            <option value="business">사업가</option>
-                            <option value="other">기타</option>
                         </select>
                     </div>
                     <div>
@@ -797,20 +797,20 @@
             </div>
         </div>
 
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t">
-            <div class="grid grid-cols-3 h-16">
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2">
+            <div class="flex justify-around items-center">
                 <button class="flex flex-col items-center justify-center space-y-1">
-                    <i class="fas fa-home text-custom text-xl"></i>
+                    <i class="fas fa-home text-blue-500 text-xl"></i>
                     <span class="text-xs">홈</span>
                 </button>
-                <button class="flex flex-col items-center justify-center space-y-1">
+                <a href="bookmarks.html" class="flex flex-col items-center justify-center space-y-1">
                     <i class="fas fa-bookmark text-gray-500 text-xl"></i>
                     <span class="text-xs">북마크</span>
-                </button>
-                <button class="flex flex-col items-center justify-center space-y-1">
+                </a>
+                <a href="profile.html" class="flex flex-col items-center justify-center space-y-1">
                     <i class="fas fa-user text-gray-500 text-xl"></i>
                     <span class="text-xs">내정보</span>
-                </button>
+                </a>
             </div>
         </nav>
     </body>
