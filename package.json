@@ -4,9 +4,15 @@
   "description": "AI 도구 추천 웹사이트",
   "scripts": {
     "build": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
-    "watch": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+    "watch": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
+    "start": "live-server --port=3000"
   },
   "devDependencies": {
+    "live-server": "^1.2.2",
     "tailwindcss": "^3.4.0"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "firebase": "^11.1.0"
   }
 }

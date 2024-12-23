@@ -4,11 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>직장인 AI 도구 추천</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    
+    <script>
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkGS-4rZyuRjYJcdkpTHMX-jH-ODWQsU4",
+            authDomain: "servingai-af0b7.firebaseapp.com",
+            projectId: "servingai-af0b7",
+            storageBucket: "servingai-af0b7.firebasestorage.app",
+            messagingSenderId: "961797414957",
+            appId: "1:961797414957:web:0ee940703bc2cc4e9158a4",
+            measurementId: "G-8611SBRZW0"
+        };
+
+        // Firebase 초기화
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Firestore 설정
+        db.settings({
+            merge: true
+        });
+
+        // 인증 상태 변경 감지
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                console.log('사용자 로그인 상태:', user.email);
+            } else {
+                console.log('로그인되지 않은 상태');
+            }
+        });
+
+        // 페이지 로드 완료 후 UI 초기화
+        window.addEventListener('DOMContentLoaded', function() {
+            // UI 요소들 초기화
+            try {
+                initializeUI();
+            } catch (error) {
+                console.error('UI 초기화 오류:', error);
+            }
+        });
+
+        // UI 초기화 함수
+        function initializeUI() {
+            // 모든 버튼에 이벤트 리스너 추가
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    console.log('버튼 클릭됨:', e.target.id);
+                });
+            });
+
+            // 링크 요소들에 이벤트 리스너 추가
+            document.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    console.log('링크 클릭됨:', e.target.href);
+                });
+            });
+        }
+
+        // 네트워크 상태 모니터링
+        window.addEventListener('online', function() {
+            console.log('온라인 상태로 전환');
+        });
+
+        window.addEventListener('offline', function() {
+            console.log('오프라인 상태로 전환');
+        });
+    </script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -143,52 +223,65 @@
             display: none !important;
         }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
+    <!-- Firebase 연결 상태 모니터링 -->
     <script>
-        // Firebase 초기화
-        const firebaseConfig = {
-            apiKey: "AIzaSyAkGS-4rZyuRjYJcdkpTHMX-jH-ODWQsU4",
-            authDomain: "servingai-af0b7.firebaseapp.com",
-            projectId: "servingai-af0b7",
-            storageBucket: "servingai-af0b7.appspot.com",
-            messagingSenderId: "961797414957",
-            appId: "1:961797414957:web:c8f6f0c8e90da8e5e2b2f4"
-        };
-
-        // Firebase 초기화
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Firestore 설정
-        db.settings({
-            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
-        });
-        db.enablePersistence()
-            .catch((err) => {
-                if (err.code == 'failed-precondition') {
-                    console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-                } else if (err.code == 'unimplemented') {
-                    console.log('The current browser does not support all of the features required to enable persistence');
-                }
+        // Firebase 연결 상태 모니터링
+        db.enableNetwork()
+            .then(() => {
+                console.log('Firebase 네트워크 연결이 활성화되었습니다.');
+            })
+            .catch((error) => {
+                console.error('Firebase 네트워크 연결 실패:', error);
             });
 
-        // 구글 로그인 설정
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-        googleProvider.setCustomParameters({
-            prompt: 'select_account'
+        // 네트워크 연결 모니터링
+        let isOffline = false;
+        window.addEventListener('online', () => {
+            if (isOffline) {
+                console.log('온라인 상태로 전환되었습니다.');
+                setTimeout(() => window.location.reload(), 1500);
+            }
+            isOffline = false;
         });
+
+        window.addEventListener('offline', () => {
+            console.log('오프라인 상태로 전환되었습니다.');
+            isOffline = true;
+        });
+
+        // 유틸리티 함수
+        function toggleElementDisplay(element, show) {
+            if (!element) return;
+            element.style.display = show ? 'flex' : 'none';
+        }
+
+        // 사용자 정보 확인 함수
+        async function checkUserInfo(user) {
+            if (!user?.uid) return;
+
+            try {
+                const userDoc = await db.doc(`users/${user.uid}`).get();
+                const userInfoModal = document.getElementById('userInfoModal');
+                
+                if (!userInfoModal) return;
+
+                toggleElementDisplay(userInfoModal, !userDoc.exists || !userDoc.data()?.job || !userDoc.data()?.experience);
+            } catch (error) {
+                console.error('사용자 정보 확인 중 오류:', error);
+            }
+        }
 
         // 로그인 함수
         async function signInWithGoogle() {
             try {
-                await auth.signInWithPopup(googleProvider);
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.setCustomParameters({
+                    prompt: 'select_account'
+                });
+                await auth.signInWithPopup(provider);
             } catch (error) {
                 console.error('로그인 실패:', error);
+                alert('로그인 중 오류가 발생했습니다.');
             }
         }
 
@@ -196,95 +289,45 @@
         async function signOut() {
             try {
                 await auth.signOut();
-                appState.reset();
-                modalController.hide();
+                const userInfoModal = document.getElementById('userInfoModal');
+                toggleElementDisplay(userInfoModal, false);
             } catch (error) {
                 console.error('로그아웃 실패:', error);
+                alert('로그아웃 중 오류가 발생했습니다.');
             }
         }
 
-        // 전역 상태 관리
-        const appState = new class AppState {
-            constructor() {
-                this.currentUser = null;
-                this.hasCheckedUserInfo = false;
-                this.modalVisible = false;
-                this.isOnline = true; // 기본값을 true로 설정
-                this.debug = true;
+        // 인증 상태 변경 감지
+        auth.onAuthStateChanged(async (user) => {
+            const loginButton = document.getElementById('loginButton');
+            const userProfile = document.getElementById('userProfile');
+            const userPhoto = document.getElementById('userPhoto');
+            const userName = document.getElementById('userName');
+            
+            if (user) {
+                toggleElementDisplay(loginButton, false);
+                toggleElementDisplay(userProfile, true);
+                if (userPhoto) userPhoto.src = user.photoURL || '';
+                if (userName) userName.textContent = user.displayName || '';
+                
+                // 사용자 정보 확인
+                await checkUserInfo(user);
+            } else {
+                toggleElementDisplay(loginButton, true);
+                toggleElementDisplay(userProfile, false);
+                if (userPhoto) userPhoto.src = '';
+                if (userName) userName.textContent = '';
+                
+                // 로그아웃 시 모달 숨기기
+                const userInfoModal = document.getElementById('userInfoModal');
+                toggleElementDisplay(userInfoModal, false);
             }
-
-            reset() {
-                this.currentUser = null;
-                this.hasCheckedUserInfo = false;
-                this.modalVisible = false;
-            }
-
-            log(...args) {
-                if (this.debug) {
-                    console.log('[AppState]', ...args);
-                }
-            }
-        }();
-
-        // 온라인 상태 체크
-        window.addEventListener('online', () => {
-            appState.isOnline = true;
-            appState.log('온라인 상태로 전환');
         });
-
-        window.addEventListener('offline', () => {
-            appState.isOnline = false;
-            appState.log('오프라인 상태로 전환');
-            modalController.hide(); // 오프라인 상태에서는 모달 숨김
-        });
-
-        // 모달 컨트롤러
-        const modalController = {
-            show: () => {
-                const modal = document.getElementById('userInfoModal');
-                if (!modal || appState.modalVisible) return;
-                modal.style.display = 'flex';
-                appState.modalVisible = true;
-                appState.log('모달 표시됨');
-            },
-            hide: () => {
-                const modal = document.getElementById('userInfoModal');
-                if (!modal) return;
-                modal.style.display = 'none';
-                appState.modalVisible = false;
-                appState.log('모달 숨겨짐');
-            }
-        };
-
-        // 로컬 스토리지 헬퍼
-        const localStorageHelper = {
-            getUserInfo: (uid) => {
-                try {
-                    const key = `userInfo_${uid}`;
-                    const data = localStorage.getItem(key);
-                    if (!data) return null;
-                    return JSON.parse(data);
-                } catch (error) {
-                    console.error('로컬 스토리지 읽기 실패:', error);
-                    return null;
-                }
-            },
-            saveUserInfo: (uid, data) => {
-                try {
-                    const key = `userInfo_${uid}`;
-                    localStorage.setItem(key, JSON.stringify(data));
-                    return true;
-                } catch (error) {
-                    console.error('로컬 스토리지 저장 실패:', error);
-                    return false;
-                }
-            }
-        };
 
         // 사용자 정보 업데이트
         async function updateUserInfo(user, job, experience) {
             if (!user?.uid || !job || !experience) {
-                appState.log('유효하지 않은 데이터');
+                console.log('유효하지 않은 데이터');
                 return false;
             }
 
@@ -296,60 +339,355 @@
             };
 
             try {
-                await db.collection('users').doc(user.uid).set(userInfo);
-                appState.log('사용자 정보 저장 성공');
-                appState.hasCheckedUserInfo = true;  // 여기서 상태를 true로 설정
-                modalController.hide();
+                await db.doc(`users/${user.uid}`).set(userInfo);
+                console.log('사용자 정보 저장 성공');
                 return true;
             } catch (error) {
-                appState.log('사용자 정보 저장 실패:', error);
+                console.error('사용자 정보 저장 실패:', error);
                 return false;
-            }
-        }
-
-        // 사용자 정보 확인
-        async function checkUserInfo(user, force = false) {
-            if (!user?.uid || (appState.hasCheckedUserInfo && !force)) {
-                return;
-            }
-
-            try {
-                const doc = await db.collection('users').doc(user.uid).get();
-                appState.log('사용자 정보 조회 결과:', { exists: doc.exists, data: doc.data() });
-                
-                if (doc.exists && doc.data()?.saved) {
-                    appState.log('사용자 정보 찾음');
-                    appState.hasCheckedUserInfo = true;
-                    modalController.hide();
-                } else {
-                    appState.log('사용자 정보 없음');
-                    appState.hasCheckedUserInfo = false;
-                    modalController.show();
-                }
-            } catch (error) {
-                appState.log('Firestore 조회 실패:', error);
-                // 오프라인이거나 에러 발생 시에도 모달 표시
-                appState.hasCheckedUserInfo = false;
-                modalController.show();
             }
         }
 
         // DOM이 로드된 후 초기화
         document.addEventListener('DOMContentLoaded', () => {
-            appState.log('DOM 로드됨');
-
             // 로그인 버튼 초기화
             const loginButton = document.getElementById('loginButton');
             if (loginButton) {
                 loginButton.addEventListener('click', signInWithGoogle);
-                appState.log('로그인 버튼 이벤트 리스너 등록됨');
             }
 
             // 로그아웃 버튼 초기화
             const logoutButton = document.getElementById('logoutButton');
             if (logoutButton) {
                 logoutButton.addEventListener('click', signOut);
-                appState.log('로그아웃 버튼 이벤트 리스너 등록됨');
+            }
+
+            // 사용자 정보 폼 제출 처리
+            const userInfoForm = document.getElementById('userInfoForm');
+            if (userInfoForm) {
+                userInfoForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const jobSelect = document.getElementById('jobSelect');
+                    const experienceSelect = document.getElementById('experienceSelect');
+                    
+                    if (!jobSelect || !experienceSelect) return;
+                    
+                    const job = jobSelect.value;
+                    const experience = experienceSelect.value;
+                    
+                    if (!job || !experience) {
+                        alert('모든 항목을 선택해주세요.');
+                        return;
+                    }
+
+                    try {
+                        const user = auth.currentUser;
+                        if (!user) return;
+
+                        await db.doc(`users/${user.uid}`).set({
+                            job,
+                            experience,
+                            createdAt: new Date().toISOString()
+                        });
+                        
+                        const userInfoModal = document.getElementById('userInfoModal');
+                        toggleElementDisplay(userInfoModal, false);
+                    } catch (error) {
+                        console.error('사용자 정보 저장 에러:', error);
+                        alert('정보 저장 중 오류가 발생했습니다.');
+                    }
+                });
+            }
+
+            // 카테고리별 도구 데이터
+            const toolsData = {
+                document: {
+                    recommended: [
+                        {
+                            name: 'ChatGPT',
+                            description: '다목적 AI 어시스턴트로, 자연스러운 대화를 통해 다양한 작업을 수행할 수 있습니다.',
+                            image: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg',
+                            rating: 4.8,
+                            users: '1억+'
+                        },
+                        {
+                            name: 'Notion AI',
+                            description: '노션에 통합된 AI 기능으로 문서 작성과 편집을 효율적으로 도와줍니다.',
+                            image: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png',
+                            rating: 4.6,
+                            users: '3천만+'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'ChatGPT', description: 'OpenAI 챗봇', url: 'https://chat.openai.com', pricing: '부분유료' },
+                        { rank: 2, name: 'Notion AI', description: '노션 AI 어시스턴트', url: 'https://notion.so', pricing: '부분유료' },
+                        { rank: 3, name: 'Google Bard', description: '구글 AI 어시스턴트', url: 'https://bard.google.com', pricing: '무료' }
+                    ],
+                    reviews: [
+                        {
+                            name: '김지현',
+                            role: '콘텐츠 크리에이터',
+                            image: 'https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg',
+                            content: 'Notion AI로 블로그 글 작성이 훨씬 수월해졌어요. 특히 글의 구조를 잡는 데 큰 도움이 됩니다.',
+                            platform: 'instagram',
+                            time: '3시간 전'
+                        },
+                        {
+                            name: '이승우',
+                            role: '프리랜서 작가',
+                            image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+                            content: 'ChatGPT의 브레인스토밍 기능이 정말 좋아요. 다양한 아이디어를 빠르게 얻을 수 있습니다.',
+                            platform: 'twitter',
+                            time: '4시간 전'
+                        }
+                    ]
+                },
+                analysis: {
+                    recommended: [
+                        {
+                            name: 'Excel Copilot',
+                            description: 'AI가 엑셀 작업을 도와주어 복잡한 데이터 분석을 쉽게 할 수 있습니다.',
+                            image: 'https://img.icons8.com/color/480/microsoft-excel-2019--v1.png',
+                            rating: 4.5,
+                            users: '2천만+'
+                        },
+                        {
+                            name: 'Power BI',
+                            description: '직관적인 인터페이스로 전문적인 데이터 시각화를 만들 수 있습니다.',
+                            image: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg',
+                            rating: 4.7,
+                            users: '1천만+'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'Excel Copilot', description: 'MS 파워포인트 AI 도우미', url: 'https://microsoft.com/microsoft-365/excel', pricing: '유료' },
+                        { rank: 2, name: 'Power BI', description: '비즈니스 인텔리전스 도구', url: 'https://powerbi.microsoft.com', pricing: '부분유료' },
+                        { rank: 3, name: 'Tableau', description: '데이터 시각화 플랫폼', url: 'https://tableau.com', pricing: '유료' }
+                    ],
+                    reviews: [
+                        {
+                            name: '박준영',
+                            role: '데이터 애널리스트',
+                            image: 'https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_1280.jpg',
+                            content: 'Excel Copilot 덕분에 복잡한 데이터 분석이 훨씬 쉬워졌어요. 자동 피벗 테이블 생성이 특히 유용합니다.',
+                            platform: 'linkedin',
+                            time: '2시간 전'
+                        },
+                        {
+                            name: '최서연',
+                            role: '비즈니스 컨설턴트',
+                            image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
+                            content: 'Power BI로 만드는 대시보드가 고객들에게 큰 호응을 얻고 있어요. 데이터를 직관적으로 이해하기 쉽게 보여줄 수 있습니다.',
+                            platform: 'twitter',
+                            time: '5시간 전'
+                        }
+                    ]
+                },
+                uiux: {
+                    recommended: [
+                        {
+                            name: 'Galileo AI',
+                            description: '종이에 손으로 직접그린 UI 사진을 입력하면 순식간에 app디자인으로 뽑아줍니다!',
+                            image: 'https://cdn-1.webcatalog.io/catalog/galileo-ai/galileo-ai-icon-filled-256.png?v=1714782968140',
+                            rating: 4.9,
+                            users: '50만+'
+                        },
+                        {
+                            name: 'Creatie.ai',
+                            description: 'AI 기반의 디자인 자동화 도구로, 브랜드 아이덴티티에 맞는 디자인을 빠르게 생성합니다.',
+                            image: 'https://framerusercontent.com/images/92oPb2FnxFPaRsACv1aFbgc4bE.png?scale-down-to=512',
+                            rating: 4.7,
+                            users: '30만+'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'Figma', description: '실시간 협업이 가능한 UI/UX 디자인 도구', url: 'https://figma.com', pricing: '부분유료' },
+                        { rank: 2, name: 'Galileo AI', description: 'AI 기반 UI/UX 디자인 생성 도구', url: 'https://www.usegalileo.ai/explore', pricing: '무료' },
+                        { rank: 3, name: 'Creatie.ai', description: 'AI 기반 디자인 자동화 도구', url: 'https://creatie.ai', pricing: '무료' }
+                    ],
+                    reviews: [
+                        {
+                            name: '박서연',
+                            role: 'Product Manager',
+                            image: 'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2696947_1280.jpg',
+                            content: 'Galileo AI를 사용하면서 프로덕트 기획과 디자인 커뮤니케이션이 훨씬 수월해졌어요. AI가 제안하는 다양한 디자인 옵션들이 팀 브레인스토밍에 큰 도움이 됩니다.',
+                            platform: 'twitter',
+                            time: '2시간 전'
+                        },
+                        {
+                            name: '김민지',
+                            role: 'UX Designer',
+                            image: 'https://cdn.pixabay.com/photo/2018/01/15/07/52/woman-3083390_1280.jpg',
+                            content: 'Creatie.ai의 자동화 기능이 정말 놀라워요. 반복적인 디자인 작업 시간을 크게 줄일 수 있었고, 덕분에 더 창의적인 작업에 집중할 수 있게 되었습니다.',
+                            platform: 'instagram',
+                            time: '5시간 전'
+                        }
+                    ]
+                },
+                presentation: {
+                    recommended: [
+                        {
+                            name: 'PowerPoint Designer',
+                            description: 'AI가 제안하는 디자인으로 전문적인 프레젠테이션을 쉽게 만들 수 있습니다.',
+                            image: 'https://img.icons8.com/color/480/microsoft-powerpoint-2019--v1.png',
+                            rating: 4.4,
+                            users: '1천만+'
+                        },
+                        {
+                            name: 'Canva Pro',
+                            description: '드래그 앤 드롭으로 누구나 쉽게 전문적인 디자인을 만들 수 있습니다.',
+                            image: 'https://static.canva.com/static/images/canva_logo_100x100@2x.png',
+                            rating: 4.7,
+                            users: '7천만+'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'PowerPoint Designer', description: 'MS 파워포인트 AI 도우미', url: 'https://microsoft.com/microsoft-365/powerpoint', pricing: '유료' },
+                        { rank: 2, name: 'Canva Pro', description: '올인원 디자인 플랫폼', url: 'https://canva.com', pricing: '부분유료' },
+                        { rank: 3, name: 'Beautiful.ai', description: '자동 프레젠테이션 생성기', url: 'https://beautiful.ai', pricing: '부분유료' }
+                    ],
+                    reviews: [
+                        {
+                            name: '송민아',
+                            role: '마케팅 디렉터',
+                            image: 'https://cdn.pixabay.com/photo/2017/02/16/23/10/smile-2072907_1280.jpg',
+                            content: 'PowerPoint Designer가 제안하는 디자인이 항상 트렌디하고 프로페셔널해요. 클라이언트 미팅 자료 준비가 한결 수월해졌습니다.',
+                            platform: 'linkedin',
+                            time: '1시간 전'
+                        },
+                        {
+                            name: '강현우',
+                            role: '스타트업 CEO',
+                            image: 'https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_1280.jpg',
+                            content: 'Canva Pro의 AI 기능이 정말 혁신적이에요. 투자 피칭 자료도 빠르고 퀄리티 있게 만들 수 있습니다.',
+                            platform: 'twitter',
+                            time: '4시간 전'
+                        }
+                    ]
+                },
+                automation: {
+                    recommended: [
+                        {
+                            name: 'Zapier',
+                            description: '코딩 없이 다양한 앱을 연동하여 업무를 자동화할 수 있습니다.',
+                            image: 'https://cdn.zapier.com/zapier/images/favicon.ico',
+                            rating: 4.6,
+                            users: '500만+'
+                        },
+                        {
+                            name: 'n8n',
+                            description: '오픈소스로 제공되어 자유롭게 커스터마이징이 가능한 자동화 도구입니다.',
+                            image: 'https://avatars.githubusercontent.com/u/45487711',
+                            rating: 4.4,
+                            users: '50만+'
+                        }
+                    ],
+                    popular: [
+                        { rank: 1, name: 'Zapier', description: '앱 연동 자동화', url: 'https://zapier.com', pricing: '부분유료' },
+                        { rank: 2, name: 'n8n', description: '워크플로우 자동화', url: 'https://n8n.io', pricing: '부분유료' },
+                        { rank: 3, name: 'Make', description: '고급 워크플로우 자동화', url: 'https://make.com', pricing: '부분유료' }
+                    ],
+                    reviews: [
+                        {
+                            name: '임지원',
+                            role: '운영 매니저',
+                            image: 'https://cdn.pixabay.com/photo/2017/04/01/21/06/portrait-2194457_1280.jpg',
+                            content: 'Zapier로 반복적인 이메일 대응과 데이터 정리가 모두 자동화되었어요. 업무 시간을 정말 많이 절약할 수 있게 되었습니다.',
+                            platform: 'linkedin',
+                            time: '2시간 전'
+                        },
+                        {
+                            name: '박성호',
+                            role: '디지털 마케터',
+                            image: 'https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_1280.jpg',
+                            content: 'n8n의 워크플로우 자동화 기능이 정말 강력해요. 특히 API 연동이 쉬워서 좋습니다.',
+                            platform: 'twitter',
+                            time: '6시간 전'
+                        }
+                    ]
+                }
+            };
+
+            // 카테고리 변경 함수
+            function changeCategory(category) {
+                // DOM 요소 존재 여부 확인
+                const categoryBtn = document.querySelector(`button[data-category="${category}"]`);
+                const toolCards = document.getElementById('tool-cards');
+                const popularToolList = document.getElementById('popular-tool-list');
+                const reviewsContainer = document.getElementById('reviews-container');
+
+                if (!categoryBtn || !toolCards || !popularToolList || !reviewsContainer) {
+                    console.error('필요한 DOM 요소를 찾을 수 없습니다.');
+                    return;
+                }
+
+                // 버튼 스타일 업데이트
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                categoryBtn.classList.add('active');
+
+                // 데이터 가져오기
+                const data = toolsData[category];
+                if (!data) {
+                    console.error('카테고리 데이터를 찾을 수 없습니다:', category);
+                    return;
+                }
+
+                // 맞춤 AI 도구 추천 업데이트
+                toolCards.innerHTML = data.recommended.map(tool => `
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <img src="${tool.image}" alt="${tool.name}" class="w-32 h-32 object-contain rounded-lg mb-3">
+                        <h3 class="font-bold mb-1">${tool.name}</h3>
+                        <div class="flex items-center text-sm text-gray-600 mb-2">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <span>${tool.rating}</span>
+                            <span class="mx-2">|</span>
+                            <span>사용자 ${tool.users}</span>
+                        </div>
+                        <p class="text-sm text-gray-500">${tool.description}</p>
+                    </div>
+                `).join('');
+
+                // 실시간 인기 도구 업데이트
+                popularToolList.innerHTML = data.popular.map(tool => `
+                    <a href="${tool.url}" target="_blank" rel="noopener noreferrer" class="block">
+                        <div class="flex items-center p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-blue-600 font-semibold">${tool.rank}</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold">${tool.name}</h3>
+                                <p class="text-sm text-gray-500">${tool.description}</p>
+                                <span class="inline-block px-2 py-1 text-xs ${
+                                    tool.pricing === '무료' ? 'bg-green-100 text-green-800' :
+                                    tool.pricing === '부분유료' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-red-100 text-red-800'
+                                } rounded mt-2">${tool.pricing}</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                `).join('');
+
+                // SNS 실사용 후기 업데이트
+                reviewsContainer.innerHTML = data.reviews.map(review => `
+                    <div class="bg-white p-4 rounded-lg shadow mb-4">
+                        <div class="flex items-center mb-3">
+                            <img src="${review.image}" alt="${review.name}" class="w-10 h-10 rounded-full mr-3">
+                            <div>
+                                <div class="font-bold">${review.name}</div>
+                                <div class="text-sm text-gray-500">${review.role}</div>
+                            </div>
+                            <div class="ml-auto">
+                                <i class="fab fa-${review.platform} text-gray-400"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-700">${review.content}</p>
+                        <div class="text-sm text-gray-500 mt-2">${review.time}</div>
+                    </div>
+                `).join('');
             }
 
             // 카테고리 버튼에 클릭 이벤트 추가
@@ -365,375 +703,6 @@
             // 초기 카테고리 설정
             changeCategory('document');
         });
-
-        // 카테고리별 도구 데이터
-        const toolsData = {
-            document: {
-                recommended: [
-                    {
-                        name: 'ChatGPT',
-                        description: '다목적 AI 어시스턴트로, 자연스러운 대화를 통해 다양한 작업을 수행할 수 있습니다.',
-                        image: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg',
-                        rating: 4.8,
-                        users: '1억+'
-                    },
-                    {
-                        name: 'Notion AI',
-                        description: '노션에 통합된 AI 기능으로 문서 작성과 편집을 효율적으로 도와줍니다.',
-                        image: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png',
-                        rating: 4.6,
-                        users: '3천만+'
-                    }
-                ],
-                popular: [
-                    { rank: 1, name: 'ChatGPT', description: 'OpenAI 챗봇', url: 'https://chat.openai.com', pricing: '부분유료' },
-                    { rank: 2, name: 'Notion AI', description: '노션 AI 어시스턴트', url: 'https://notion.so', pricing: '부분유료' },
-                    { rank: 3, name: 'Google Bard', description: '구글 AI 어시스턴트', url: 'https://bard.google.com', pricing: '무료' }
-                ],
-                reviews: [
-                    {
-                        name: '김지현',
-                        role: '콘텐츠 크리에이터',
-                        image: 'https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg',
-                        content: 'Notion AI로 블로그 글 작성이 훨씬 수월해졌어요. 특히 글의 구조를 잡는 데 큰 도움이 됩니다.',
-                        platform: 'instagram',
-                        time: '3시간 전'
-                    },
-                    {
-                        name: '이승우',
-                        role: '프리랜서 작가',
-                        image: 'https://cdn.pixabay.com/photo/2017/08/12/19/01/man-2635088_1280.jpg',
-                        content: 'ChatGPT의 브레인스토밍 기능이 정말 좋아요. 다양한 아이디어를 빠르게 얻을 수 있습니다.',
-                        platform: 'twitter',
-                        time: '4시간 전'
-                    }
-                ]
-            },
-            analysis: {
-                recommended: [
-                    {
-                        name: 'Excel Copilot',
-                        description: 'AI가 엑셀 작업을 도와주어 복잡한 데이터 분석을 쉽게 할 수 있습니다.',
-                        image: 'https://img.icons8.com/color/480/microsoft-excel-2019--v1.png',
-                        rating: 4.5,
-                        users: '2천만+'
-                    },
-                    {
-                        name: 'Power BI',
-                        description: '직관적인 인터페이스로 전문적인 데이터 시각화를 만들 수 있습니다.',
-                        image: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg',
-                        rating: 4.7,
-                        users: '1천만+'
-                    }
-                ],
-                popular: [
-                    { rank: 1, name: 'Excel Copilot', description: 'MS 파워포인트 AI 도우미', url: 'https://microsoft.com/microsoft-365/excel', pricing: '유료' },
-                    { rank: 2, name: 'Power BI', description: '비즈니스 인텔리전스 도구', url: 'https://powerbi.microsoft.com', pricing: '부분유료' },
-                    { rank: 3, name: 'Tableau', description: '데이터 시각화 플랫폼', url: 'https://tableau.com', pricing: '유료' }
-                ],
-                reviews: [
-                    {
-                        name: '박준영',
-                        role: '데이터 애널리스트',
-                        image: 'https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_1280.jpg',
-                        content: 'Excel Copilot 덕분에 복잡한 데이터 분석이 훨씬 쉬워졌어요. 자동 피벗 테이블 생성이 특히 유용합니다.',
-                        platform: 'linkedin',
-                        time: '2시간 전'
-                    },
-                    {
-                        name: '최서연',
-                        role: '비즈니스 컨설턴트',
-                        image: 'https://cdn.pixabay.com/photo/2018/01/15/07/52/woman-3083377_1280.jpg',
-                        content: 'Power BI로 만드는 대시보드가 고객들에게 큰 호응을 얻고 있어요. 데이터를 직관적으로 이해하기 쉽게 보여줄 수 있습니다.',
-                        platform: 'twitter',
-                        time: '5시간 전'
-                    }
-                ]
-            },
-            uiux: {
-                recommended: [
-                    {
-                        name: 'Galileo AI',
-                        description: '종이에 손으로 직접그린 UI 사진을 입력하면 순식간에 app디자인으로 뽑아줍니다!',
-                        image: 'https://cdn-1.webcatalog.io/catalog/galileo-ai/galileo-ai-icon-filled-256.png?v=1714782968140',
-                        rating: 4.9,
-                        users: '50만+'
-                    },
-                    {
-                        name: 'Creatie.ai',
-                        description: 'AI 기반의 디자인 자동화 도구로, 브랜드 아이덴티티에 맞는 디자인을 빠르게 생성합니다.',
-                        image: 'https://framerusercontent.com/images/92oPb2FnxFPaRsACv1aFbgc4bE.png?scale-down-to=512',
-                        rating: 4.7,
-                        users: '30만+'
-                    }
-                ],
-                popular: [
-                    { rank: 1, name: 'Figma', description: '실시간 협업이 가능한 UI/UX 디자인 도구', url: 'https://figma.com', pricing: '부분유료' },
-                    { rank: 2, name: 'Galileo AI', description: 'AI 기반 UI/UX 디자인 생성 도구', url: 'https://www.usegalileo.ai/explore', pricing: '무료' },
-                    { rank: 3, name: 'Creatie.ai', description: 'AI 기반 디자인 자동화 도구', url: 'https://creatie.ai', pricing: '무료' }
-                ],
-                reviews: [
-                    {
-                        name: '박서연',
-                        role: 'Product Manager',
-                        image: 'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2696947_1280.jpg',
-                        content: 'Galileo AI를 사용하면서 프로덕트 기획과 디자인 커뮤니케이션이 훨씬 수월해졌어요. AI가 제안하는 다양한 디자인 옵션들이 팀 브레인스토밍에 큰 도움이 됩니다.',
-                        platform: 'twitter',
-                        time: '2시간 전'
-                    },
-                    {
-                        name: '김민지',
-                        role: 'UX Designer',
-                        image: 'https://cdn.pixabay.com/photo/2018/01/15/07/52/woman-3083390_1280.jpg',
-                        content: 'Creatie.ai의 자동화 기능이 정말 놀라워요. 반복적인 디자인 작업 시간을 크게 줄일 수 있었고, 덕분에 더 창의적인 작업에 집중할 수 있게 되었습니다.',
-                        platform: 'instagram',
-                        time: '5시간 전'
-                    }
-                ]
-            },
-            presentation: {
-                recommended: [
-                    {
-                        name: 'PowerPoint Designer',
-                        description: 'AI가 제안하는 디자인으로 전문적인 프레젠테이션을 쉽게 만들 수 있습니다.',
-                        image: 'https://img.icons8.com/color/480/microsoft-powerpoint-2019--v1.png',
-                        rating: 4.4,
-                        users: '1천만+'
-                    },
-                    {
-                        name: 'Canva Pro',
-                        description: '드래그 앤 드롭으로 누구나 쉽게 전문적인 디자인을 만들 수 있습니다.',
-                        image: 'https://static.canva.com/static/images/canva_logo_100x100@2x.png',
-                        rating: 4.7,
-                        users: '7천만+'
-                    }
-                ],
-                popular: [
-                    { rank: 1, name: 'PowerPoint Designer', description: 'MS 파워포인트 AI 도우미', url: 'https://microsoft.com/microsoft-365/powerpoint', pricing: '유료' },
-                    { rank: 2, name: 'Canva Pro', description: '올인원 디자인 플랫폼', url: 'https://canva.com', pricing: '부분유료' },
-                    { rank: 3, name: 'Beautiful.ai', description: '자동 프레젠테이션 생성기', url: 'https://beautiful.ai', pricing: '부분유료' }
-                ],
-                reviews: [
-                    {
-                        name: '송민아',
-                        role: '마케팅 디렉터',
-                        image: 'https://cdn.pixabay.com/photo/2017/02/16/23/10/smile-2072907_1280.jpg',
-                        content: 'PowerPoint Designer가 제안하는 디자인이 항상 트렌디하고 프로페셔널해요. 클라이언트 미팅 자료 준비가 한결 수월해졌습니다.',
-                        platform: 'linkedin',
-                        time: '1시간 전'
-                    },
-                    {
-                        name: '강현우',
-                        role: '스타트업 CEO',
-                        image: 'https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_1280.jpg',
-                        content: 'Canva Pro의 AI 기능이 정말 혁신적이에요. 투자 피칭 자료도 빠르고 퀄리티 있게 만들 수 있습니다.',
-                        platform: 'twitter',
-                        time: '4시간 전'
-                    }
-                ]
-            },
-            automation: {
-                recommended: [
-                    {
-                        name: 'Zapier',
-                        description: '코딩 없이 다양한 앱을 연동하여 업무를 자동화할 수 있습니다.',
-                        image: 'https://cdn.zapier.com/zapier/images/favicon.ico',
-                        rating: 4.6,
-                        users: '500만+'
-                    },
-                    {
-                        name: 'n8n',
-                        description: '오픈소스로 제공되어 자유롭게 커스터마이징이 가능한 자동화 도구입니다.',
-                        image: 'https://avatars.githubusercontent.com/u/45487711',
-                        rating: 4.4,
-                        users: '50만+'
-                    }
-                ],
-                popular: [
-                    { rank: 1, name: 'Zapier', description: '앱 연동 자동화', url: 'https://zapier.com', pricing: '부분유료' },
-                    { rank: 2, name: 'n8n', description: '워크플로우 자동화', url: 'https://n8n.io', pricing: '부분유료' },
-                    { rank: 3, name: 'Make', description: '고급 워크플로우 자동화', url: 'https://make.com', pricing: '부분유료' }
-                ],
-                reviews: [
-                    {
-                        name: '임지원',
-                        role: '운영 매니저',
-                        image: 'https://cdn.pixabay.com/photo/2017/04/01/21/06/portrait-2194457_1280.jpg',
-                        content: 'Zapier로 반복적인 이메일 대응과 데이터 정리가 모두 자동화되었어요. 업무 시간을 정말 많이 절약할 수 있게 되었습니다.',
-                        platform: 'linkedin',
-                        time: '2시간 전'
-                    },
-                    {
-                        name: '박성호',
-                        role: '디지털 마케터',
-                        image: 'https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_1280.jpg',
-                        content: 'n8n의 워크플로우 자동화 기능이 정말 강력해요. 특히 API 연동이 쉬워서 좋습니다.',
-                        platform: 'twitter',
-                        time: '6시간 전'
-                    }
-                ]
-            }
-        };
-
-        // 카테고리 변경 함수
-        function changeCategory(category) {
-            // DOM 요소 존재 여부 확인
-            const categoryBtn = document.querySelector(`button[data-category="${category}"]`);
-            const toolCards = document.getElementById('tool-cards');
-            const popularToolList = document.getElementById('popular-tool-list');
-            const reviewsContainer = document.getElementById('reviews-container');
-
-            if (!categoryBtn || !toolCards || !popularToolList || !reviewsContainer) {
-                console.error('필요한 DOM 요소를 찾을 수 없습니다.');
-                return;
-            }
-
-            // 버튼 스타일 업데이트
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            categoryBtn.classList.add('active');
-
-            // 데이터 가져오기
-            const data = toolsData[category];
-            if (!data) {
-                console.error('카테고리 데이터를 찾을 수 없습니다:', category);
-                return;
-            }
-
-            // 맞춤 AI 도구 추천 업데이트
-            toolCards.innerHTML = data.recommended.map(tool => `
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <img src="${tool.image}" alt="${tool.name}" class="w-32 h-32 object-contain rounded-lg mb-3">
-                    <h3 class="font-bold mb-1">${tool.name}</h3>
-                    <div class="flex items-center text-sm text-gray-600 mb-2">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <span>${tool.rating}</span>
-                        <span class="mx-2">|</span>
-                        <span>사용자 ${tool.users}</span>
-                    </div>
-                    <p class="text-sm text-gray-500">${tool.description}</p>
-                </div>
-            `).join('');
-
-            // 실시간 인기 도구 업데이트
-            popularToolList.innerHTML = data.popular.map(tool => `
-                <a href="${tool.url}" target="_blank" rel="noopener noreferrer" class="block">
-                    <div class="flex items-center p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
-                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-blue-600 font-semibold">${tool.rank}</span>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold">${tool.name}</h3>
-                            <p class="text-sm text-gray-500">${tool.description}</p>
-                            <span class="inline-block px-2 py-1 text-xs ${
-                                tool.pricing === '무료' ? 'bg-green-100 text-green-800' :
-                                tool.pricing === '부분유료' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-red-100 text-red-800'
-                            } rounded mt-2">${tool.pricing}</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </a>
-            `).join('');
-
-            // SNS 실사용 후기 업데이트
-            reviewsContainer.innerHTML = data.reviews.map(review => `
-                <div class="bg-white p-4 rounded-lg shadow mb-4">
-                    <div class="flex items-center mb-3">
-                        <img src="${review.image}" alt="${review.name}" class="w-10 h-10 rounded-full mr-3">
-                        <div>
-                            <div class="font-bold">${review.name}</div>
-                            <div class="text-sm text-gray-500">${review.role}</div>
-                        </div>
-                        <div class="ml-auto">
-                            <i class="fab fa-${review.platform} text-gray-400"></i>
-                        </div>
-                    </div>
-                    <p class="text-gray-700">${review.content}</p>
-                    <div class="text-sm text-gray-500 mt-2">${review.time}</div>
-                </div>
-            `).join('');
-        }
-
-        // 로그인 상태 관찰자
-        auth.onAuthStateChanged(async (user) => {
-            appState.log('인증 상태 변경:', user ? '로그인' : '로그아웃');
-            
-            const loginButton = document.getElementById('loginButton');
-            const userProfile = document.getElementById('userProfile');
-
-            if (user) {
-                appState.currentUser = user;
-                appState.hasCheckedUserInfo = false;
-
-                // UI 업데이트
-                if (loginButton) loginButton.style.display = 'none';
-                if (userProfile) {
-                    userProfile.style.display = 'flex';
-                    const userPhoto = document.getElementById('userPhoto');
-                    const userName = document.getElementById('userName');
-                    if (userPhoto) userPhoto.src = user.photoURL || 'https://via.placeholder.com/32';
-                    if (userName) userName.textContent = user.displayName;
-                }
-
-                // 사용자 정보 확인 (약간의 지연 후)
-                await new Promise(resolve => setTimeout(resolve, 500));
-                await checkUserInfo(user);
-            } else {
-                appState.reset();
-                if (loginButton) loginButton.style.display = 'flex';
-                if (userProfile) userProfile.style.display = 'none';
-                modalController.hide();
-            }
-        });
-
-        // 폼 제출 처리
-        const userInfoForm = document.getElementById('userInfoForm');
-        if (userInfoForm) {
-            userInfoForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                appState.log('폼 제출 시작');
-                
-                const user = appState.currentUser;
-                if (!user) {
-                    appState.log('로그인된 사용자 없음');
-                    return;
-                }
-
-                const jobSelect = document.getElementById('jobSelect');
-                const experienceSelect = document.getElementById('experienceSelect');
-                
-                if (!jobSelect || !experienceSelect) {
-                    appState.log('폼 요소를 찾을 수 없음');
-                    return;
-                }
-                
-                const job = jobSelect.value;
-                const experience = experienceSelect.value;
-                
-                if (!job || !experience) {
-                    appState.log('필수 필드 누락');
-                    return;
-                }
-
-                const submitButton = userInfoForm.querySelector('button[type="submit"]');
-                if (submitButton) {
-                    submitButton.disabled = true;
-                    submitButton.textContent = '저장 중...';
-                }
-
-                try {
-                    const success = await updateUserInfo(user, job, experience);
-                    appState.log('폼 제출 결과:', success);
-                } finally {
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.textContent = '저장';
-                    }
-                }
-            });
-        }
     </script>
 </head>
 <body class="bg-gray-100">
@@ -829,19 +798,72 @@
         </div>
 
         <nav class="fixed bottom-0 left-0 right-0 bg-white border-t">
-            <div class="grid grid-cols-4 h-16">
-                <button class="flex flex-col items-center justify-center">
-                    <i class="fas fa-home text-custom"></i>
-                    <span class="text-xs mt-1">홈</span>
+            <div class="grid grid-cols-3 h-16">
+                <button class="flex flex-col items-center justify-center space-y-1">
+                    <i class="fas fa-home text-custom text-xl"></i>
+                    <span class="text-xs">홈</span>
                 </button>
-                <button class="flex flex-col items-center justify-center">
-                    <i class="fas fa-bookmark text-gray-400"></i>
-                    <span class="text-xs mt-1">북마크</span>
+                <button class="flex flex-col items-center justify-center space-y-1">
+                    <i class="fas fa-bookmark text-gray-500 text-xl"></i>
+                    <span class="text-xs">북마크</span>
                 </button>
-                <button class="flex flex-col items-center justify-center">
-                    <i class="fas fa-user text-gray-400"></i>
+                <button class="flex flex-col items-center justify-center space-y-1">
+                    <i class="fas fa-user text-gray-500 text-xl"></i>
+                    <span class="text-xs">내정보</span>
                 </button>
             </div>
         </nav>
     </body>
 </html>
+<script type="module">
+    import { auth } from './js/auth.js';
+    import { toggleBookmark, updateBookmarkButtonUI } from './js/bookmark.js';
+    
+    // AI 도구 카드 렌더링
+    function renderAITool(tool) {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-lg shadow-md p-6';
+        card.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div class="flex items-start space-x-4">
+                    <img src="${tool.imageUrl}" alt="${tool.name}" class="w-16 h-16 rounded">
+                    <div>
+                        <h3 class="text-xl font-semibold">${tool.name}</h3>
+                        <div class="flex items-center mt-1">
+                            <span class="text-yellow-400">★</span>
+                            <span class="ml-1">${tool.rating}</span>
+                            <span class="mx-2">|</span>
+                            <span>사용자 ${tool.userCount}+</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="bookmark-btn" data-tool-id="${tool.id}">
+                    <i class="far fa-bookmark text-gray-400 hover:text-blue-500"></i>
+                </button>
+            </div>
+            <p class="text-gray-600 mt-4">${tool.description}</p>
+        `;
+
+        // 북마크 버튼에 이벤트 리스너 추가
+        const bookmarkBtn = card.querySelector('.bookmark-btn');
+        bookmarkBtn.addEventListener('click', async () => {
+            const success = await toggleBookmark(tool.id, {
+                name: tool.name,
+                description: tool.description,
+                imageUrl: tool.imageUrl,
+                url: tool.url
+            });
+            
+            if (success) {
+                updateBookmarkButtonUI(bookmarkBtn, tool.id);
+            }
+        });
+
+        // 초기 북마크 상태 설정
+        updateBookmarkButtonUI(bookmarkBtn, tool.id);
+
+        return card;
+    }
+
+    // 나머지 코드...
+</script>
