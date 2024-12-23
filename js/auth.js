@@ -1,6 +1,5 @@
 // Firebase 인증 관련 함수들
-import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { db, auth } from './firebase-config.js';
 
 // 네트워크 상태 모니터링
 let isOffline = false;
@@ -20,13 +19,13 @@ window.addEventListener('offline', () => {
 // Google 로그인
 export async function signInWithGoogle() {
     try {
-        const provider = new GoogleAuthProvider();
+        const provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({
             prompt: 'select_account'
         });
         
         console.log('Google 로그인 시도...');
-        const result = await signInWithPopup(window.auth, provider);
+        const result = await auth.signInWithPopup(provider);
         console.log('로그인 성공:', result.user.email);
         
         // 사용자 정보 Firestore에 저장
@@ -44,7 +43,7 @@ export async function signInWithGoogle() {
 // 로그아웃
 export async function signOut() {
     try {
-        await window.auth.signOut();
+        await auth.signOut();
         console.log('로그아웃 성공');
     } catch (error) {
         console.error('로그아웃 에러:', error);
@@ -55,22 +54,21 @@ export async function signOut() {
 // 사용자 정보 Firestore에 저장
 async function saveUserToFirestore(user) {
     try {
-        const userRef = doc(window.db, 'users', user.uid);
-        await setDoc(userRef, {
+        const userRef = db.collection('users').doc(user.uid);
+        await userRef.set({
             email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
-            lastLogin: new Date()
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
         console.log('사용자 정보 저장 성공');
     } catch (error) {
-        console.error('사용자 정보 저장 에러:', error);
-        throw error;
+        console.error('사용자 정보 저장 실패:', error);
     }
 }
 
 // 인증 상태 변경 리스너
-window.auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged((user) => {
     console.log('인증 상태 변경:', user ? user.email : '로그아웃');
     updateUIForAuth(user);
 });
@@ -79,54 +77,50 @@ window.auth.onAuthStateChanged((user) => {
 function updateUIForAuth(user) {
     const loginButton = document.getElementById('loginButton');
     const userProfile = document.getElementById('userProfile');
-    
-    if (loginButton && userProfile) {
-        if (user) {
-            loginButton.style.display = 'none';
-            userProfile.style.display = 'flex';
-            
-            const userImage = userProfile.querySelector('img');
-            const userName = userProfile.querySelector('.user-name');
-            
-            if (userImage) userImage.src = user.photoURL || 'default-profile.png';
-            if (userName) userName.textContent = user.displayName || user.email;
-        } else {
-            loginButton.style.display = 'block';
-            userProfile.style.display = 'none';
-        }
+    const userPhoto = document.getElementById('userPhoto');
+    const userName = document.getElementById('userName');
+
+    if (user) {
+        // 로그인 상태
+        loginButton.style.display = 'none';
+        userProfile.style.display = 'flex';
+        if (userPhoto) userPhoto.src = user.photoURL || '';
+        if (userName) userName.textContent = user.displayName || user.email;
+    } else {
+        // 로그아웃 상태
+        loginButton.style.display = 'flex';
+        userProfile.style.display = 'none';
     }
 }
 
-export const checkUserInfo = async (user) => {
+// 사용자 정보 확인
+export async function checkUserInfo(user) {
     if (!user?.uid) return false;
 
     try {
-        const userDoc = await getDoc(doc(window.db, 'users', user.uid));
-        return userDoc.exists() && userDoc.data()?.job && userDoc.data()?.experience;
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        return userDoc.exists && userDoc.data()?.job && userDoc.data()?.experience;
     } catch (error) {
         console.error('사용자 정보 확인 중 오류:', error);
         return false;
     }
-};
+}
 
+// 사용자 정보 업데이트
 export const updateUserInfo = async (user, job, experience) => {
-    if (!user?.uid || !job || !experience) {
-        throw new Error('유효하지 않은 데이터');
-    }
-
     const userInfo = {
         job,
         experience,
-        updatedAt: new Date().toISOString()
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     try {
-        await setDoc(doc(window.db, 'users', user.uid), userInfo, { merge: true });
+        await db.collection('users').doc(user.uid).set(userInfo, { merge: true });
         return true;
     } catch (error) {
         console.error('사용자 정보 저장 실패:', error);
-        throw error;
+        return false;
     }
 };
 
-export { window.auth as auth, window.db as db };
+export { auth, db };
