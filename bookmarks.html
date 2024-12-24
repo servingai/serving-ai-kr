@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>북마크 - ServingAI</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase 초기화 -->
+    <script>
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkGS-4rZyuRjYJcdkpTHMX-jH-ODWQsU4",
+            authDomain: "servingai-af0b7.firebaseapp.com",
+            projectId: "servingai-af0b7",
+            storageBucket: "servingai-af0b7.firebasestorage.app",
+            messagingSenderId: "961797414957",
+            appId: "1:961797414957:web:0ee940703bc2cc4e9158a4",
+            measurementId: "G-8611SBRZW0"
+        };
+
+        // Firebase 초기화
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+    </script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- 메인 컨텐츠 -->
+    <main class="container mx-auto px-4 py-8 mt-16 mb-20">
+        <!-- 로딩 메시지 -->
+        <div id="loadingMessage" class="hidden text-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+            <p class="text-gray-600 mt-4">로딩 중...</p>
+        </div>
+
+        <!-- 로그인하지 않은 경우 메시지 -->
+        <div id="notLoggedInMessage" class="hidden text-center py-8">
+            <p class="text-gray-600 mb-4">로그인이 필요한 페이지입니다.</p>
+            <button onclick="signInWithGoogle()" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                로그인하기
+            </button>
+        </div>
+
+        <!-- 북마크 목록 -->
+        <div id="bookmarksList" class="hidden space-y-4">
+            <!-- 북마크가 여기에 동적으로 추가됩니다 -->
+        </div>
+
+        <!-- 북마크가 없는 경우 메시지 -->
+        <div id="emptyBookmarks" class="hidden text-center py-8">
+            <p class="text-gray-600">아직 북마크한 AI 도구가 없습니다.</p>
+            <a href="index.html" class="text-blue-500 hover:text-blue-600 mt-2 inline-block">
+                AI 도구 둘러보기
+            </a>
+        </div>
+    </main>
+
+    <!-- 바텀 네비게이션 -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2">
+        <div class="flex justify-around items-center">
+            <a href="index.html" class="flex flex-col items-center justify-center space-y-1">
+                <i class="fas fa-home text-gray-500 text-xl"></i>
+                <span class="text-xs text-gray-500">홈</span>
+            </a>
+            <a href="ai-recommendation.html" class="flex flex-col items-center justify-center space-y-1">
+                <i class="fas fa-robot text-gray-500 text-xl"></i>
+                <span class="text-xs text-gray-500">AI추천</span>
+            </a>
+            <a href="bookmarks.html" class="flex flex-col items-center justify-center space-y-1">
+                <i class="fas fa-bookmark text-blue-500 text-xl"></i>
+                <span class="text-xs text-blue-500">북마크</span>
+            </a>
+            <a href="profile.html" class="flex flex-col items-center justify-center space-y-1">
+                <i class="fas fa-user text-gray-500 text-xl"></i>
+                <span class="text-xs text-gray-500">내정보</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 북마크 관련 함수들 -->
+    <script type="module">
+        import { getUserBookmarks, removeBookmark } from './js/bookmark.js';
+
+        // DOM이 로드된 후 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            // 모든 UI 요소 숨기기
+            function hideAllElements() {
+                const elements = ['loadingMessage', 'notLoggedInMessage', 'bookmarksList', 'emptyBookmarks'];
+                elements.forEach(id => document.getElementById(id).classList.add('hidden'));
+            }
+
+            // 페이지 로드 시 초기화
+            hideAllElements();
+            document.getElementById('loadingMessage').classList.remove('hidden');
+
+            // Firebase 인증 상태 관찰자
+            firebase.auth().onAuthStateChanged(async function(user) {
+                console.log('Auth state changed:', user ? user.uid : 'No user');
+                
+                // 모든 요소 숨기기
+                hideAllElements();
+
+                if (user) {
+                    // 사용자가 로그인한 경우
+                    document.getElementById('loadingMessage').classList.remove('hidden');
+                    
+                    try {
+                        // 북마크 데이터 로드
+                        console.log('Loading bookmarks for user:', user.uid);
+                        const bookmarks = await getUserBookmarks(user.uid);
+                        console.log('Loaded bookmarks:', bookmarks);
+                        
+                        // 로딩 메시지 숨기기
+                        document.getElementById('loadingMessage').classList.add('hidden');
+                        
+                        if (bookmarks.length === 0) {
+                            document.getElementById('emptyBookmarks').classList.remove('hidden');
+                        } else {
+                            const bookmarksList = document.getElementById('bookmarksList');
+                            bookmarksList.classList.remove('hidden');
+                            bookmarksList.innerHTML = ''; // 기존 내용 초기화
+                            
+                            bookmarks.forEach((bookmark) => {
+                                const bookmarkElement = createBookmarkElement(bookmark);
+                                bookmarksList.appendChild(bookmarkElement);
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error getting bookmarks:', error);
+                        document.getElementById('loadingMessage').classList.add('hidden');
+                        alert('북마크를 불러오는데 실패했습니다.');
+                    }
+                } else {
+                    // 사용자가 로그인하지 않은 경우
+                    document.getElementById('notLoggedInMessage').classList.remove('hidden');
+                }
+            });
+        });
+
+        // 북마크 요소 생성 함수
+        function createBookmarkElement(bookmark) {
+            const div = document.createElement('div');
+            div.className = 'bg-white rounded-lg shadow-md p-4';
+            div.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-lg font-semibold">${bookmark.toolData.name}</h3>
+                        <p class="text-gray-600 mt-1">${bookmark.toolData.description}</p>
+                        ${bookmark.toolData.url ? `<a href="${bookmark.toolData.url}" target="_blank" class="text-blue-500 hover:text-blue-600 mt-2 inline-block">도구 사용하기</a>` : ''}
+                    </div>
+                    <button onclick="window.removeBookmarkItem('${bookmark.toolId}')" class="text-red-500 hover:text-red-600">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            return div;
+        }
+
+        // 북마크 제거 함수를 전역으로 노출
+        window.removeBookmarkItem = async function(toolId) {
+            const user = firebase.auth().currentUser;
+            if (!user) return;
+
+            const confirmDelete = confirm('이 북마크를 삭제하시겠습니까?');
+            if (!confirmDelete) return;
+
+            try {
+                await removeBookmark(user.uid, toolId);
+                // 페이지 새로고침
+                window.location.reload();
+            } catch (error) {
+                console.error('Error removing bookmark:', error);
+                alert('북마크 삭제에 실패했습니다.');
+            }
+        };
+
+        // Google 로그인 함수
+        window.signInWithGoogle = function() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider);
+        };
+    </script>
+</body>
+</html>

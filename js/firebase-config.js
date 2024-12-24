@@ -10,27 +10,26 @@ const firebaseConfig = {
 };
 
 // Firebase 초기화
-let app;
 if (!firebase.apps.length) {
-    app = firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
 }
+
+// Firebase 서비스 인스턴스
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 // 오프라인 지속성 설정
 const PERSISTENCE_ENABLED = false;  // 일단 비활성화
 
-// 오프라인 지속성 활성화
 if (PERSISTENCE_ENABLED) {
-    app.firestore().enablePersistence({ synchronizeTabs: true })
+    db.enablePersistence()
         .catch((err) => {
-            if (err.code === 'failed-precondition') {
-                console.warn('여러 탭이 열려 있어 오프라인 지속성을 활성화할 수 없습니다.');
-            } else if (err.code === 'unimplemented') {
-                console.warn('현재 브라우저는 오프라인 지속성을 지원하지 않습니다.');
+            if (err.code == 'failed-precondition') {
+                console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+            } else if (err.code == 'unimplemented') {
+                console.log('The current browser does not support all of the features required to enable persistence');
             }
         });
 }
 
-const db = firebase.firestore();
-const auth = firebase.auth();
-
-export { db, auth };
+export { auth, db };
