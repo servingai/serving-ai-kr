@@ -3,7 +3,7 @@ import socketserver
 import os
 from urllib.parse import urlparse
 
-PORT = 8080
+PORT = 8081
 
 class CORSHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def send_response(self, *args, **kwargs):
